@@ -3,7 +3,8 @@ const http = require('http');
 const server = http.createServer((req, res) => {
   console.log('+++OK')
   res.writeHead(200, {
-    'Access-Control-Allow-Origin': '*',
+    // 'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': 'https://ce03510-wordpress-og5g7.tw1.ru',
     'Content-Type': 'text/html',
   });
 
