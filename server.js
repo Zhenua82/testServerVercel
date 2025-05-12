@@ -4,7 +4,6 @@ const server = http.createServer((req, res) => {
   console.log('+++OK')
   res.writeHead(200, {
     'Access-Control-Allow-Origin': '*',
-    // 'Content-Type': 'text/plain',
     'Content-Type': 'text/html',
   });
 
