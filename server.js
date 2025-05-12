@@ -1,10 +1,14 @@
 const http = require('http');
+const allowedOrigins = [
+  'https://ce03510-wordpress-og5g7.tw1.ru',
+  'http://127.0.0.1:5500'
+];
 
 const server = http.createServer((req, res) => {
   console.log('+++OK')
   res.writeHead(200, {
     // 'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Origin': ['https://ce03510-wordpress-og5g7.tw1.ru', 'http://127.0.0.1:5500'],
+    'Access-Control-Allow-Origin': allowedOrigins,
     'Content-Type': 'text/html',
   });
 
