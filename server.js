@@ -4,7 +4,7 @@ const server = http.createServer((req, res) => {
   console.log('+++OK')
   res.writeHead(200, {
     // 'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Origin': ['https://ce03510-wordpress-og5g7.tw1.ru', 'http://127.0.0.1:5500/http/povtor/front.html'],
+    'Access-Control-Allow-Origin': ['https://ce03510-wordpress-og5g7.tw1.ru', 'http://127.0.0.1:5500'],
     'Content-Type': 'text/html',
   });
 
