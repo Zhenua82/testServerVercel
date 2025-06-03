@@ -31,33 +31,68 @@
 //   console.log('Сервер запущен на порту 5000');
 // });
 
-const http = require('http');
 
+// 
+
+// server.js
+
+
+const express = require('express');
+const mysql = require('mysql2');
+const cors = require('cors');
+require('dotenv').config();
+
+const app = express();
+app.use(express.json());
+
+// Настройка CORS
 const allowedOrigins = [
   'https://ce03510-wordpress-og5g7.tw1.ru',
   'http://127.0.0.1:5500',
   'https://testserver-eight-olive.vercel.app'
 ];
 
-const server = http.createServer((req, res) => {
-  const origin = req.headers.origin;
-
-  if (!origin || allowedOrigins.includes(origin)) {
-    // Разрешаем доступ без проверки origin или если он разрешен
-    res.writeHead(200, {
-      'Content-Type': 'text/html',
-      'Access-Control-Allow-Origin': origin || '*', // Можно поставить '*' для всех
-    });
-    console.log('Allowed request from:', origin);
-    res.end('<h1>Answer from server on port 5000!!!!!!!!!!!!</h1> <a href="#">Link</a>');
-  } else {
-    res.writeHead(403, {
-      'Content-Type': 'text/html',
-    });
-    res.end('<h1>403 Forbidden: Access is denied</h1>');
+app.use(cors({
+  origin: function(origin, callback) {
+    // Разрешаем, если origin есть в списке или если origin отсутствует (например, при локальных запросах)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
   }
+}));
+
+const DATA = {
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE
+};
+
+app.post('/bd', (req, res) => {
+  const connection = mysql.createConnection(DATA);
+  connection.connect();
+
+  // const query = 'ALTER TABLE homework_human CHANGE COLUMN age telephone VARCHAR(81)';
+  let query = 'SELECT Name, photo, telephone FROM homework_human WHERE is_published = true';
+  
+  connection.query(query, (error, result) => {
+    if (error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      res.json({ message: 'Взаимодействие с бд состоялось', result });
+    }
+    connection.end();
+  });
+});
+app.get('/', (req, res) => {
+  res.end('<h1>Answer from server on port 5000!!!!!!!!!!!!</h1> <a href="#">Link</a>')
+})
+// Обработка всех остальных маршрутов — вывод 404
+app.use((req, res) => {
+  res.status(404).send('<h1>404!!!</h1>');
 });
 
-server.listen(5000, () => {
-  console.log('Сервер запущен на порту 5000');
-});
+app.listen(5000, () => console.log('Server running on port 5000'));
