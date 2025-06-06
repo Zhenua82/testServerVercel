@@ -76,7 +76,19 @@ app.post('/bd', (req, res) => {
 
   // const query = 'ALTER TABLE homework_human CHANGE COLUMN age telephone VARCHAR(81)';
   // let query = 'SELECT Name, photo, telephone FROM homework_human WHERE is_published = true';
-  let query = 'SELECT Name, photo, telephone, profession_id, portfolio FROM homework_human WHERE is_published = true';
+  // let query = 'SELECT Name, photo, telephone, profession_id, portfolio FROM homework_human WHERE is_published = true';
+
+  let query = `
+    SELECT 
+      hh.Name, 
+      hh.photo, 
+      hh.telephone, 
+      hp.title AS profession_title,
+      hh.portfolio
+    FROM homework_human AS hh
+    JOIN homework_profession AS hp ON hh.profession_id = hp.id
+    WHERE hh.is_published = true;
+    `;
   
   connection.query(query, (error, result) => {
     if (error) {
