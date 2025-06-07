@@ -100,17 +100,13 @@ app.post('/bd', (req, res) => {
   });
 });
 
-
-// Создаем папку media, если не существует
-if (!fs.existsSync('media')){
-    fs.mkdirSync('media');
-}
+const mediaPath = 'http://127.0.0.1:5500/nodeSalon/media';
 // Настраиваем статическую отдачу файлов из media
-app.use('/media', express.static(path.join(__dirname, 'media')));
+app.use('/media', express.static('http://127.0.0.1:5500/nodeSalon/media'));
 // Настройка хранения файлов
 const storage = multer.diskStorage({
    destination: (req, file, cb) => {
-       cb(null, 'media'); // сохраняем в папку media
+       cb(null, mediaPath); // используйте существующую папку
    },
    filename: (req, file, cb) => {
        const uniqueSuffix= Date.now() + '-' + Math.round(Math.random()*1E9);
@@ -140,10 +136,6 @@ app.post('/bdPost', upload.fields([
      }
    });
 });
-
-
-
-
 
 app.get('/', (req, res) => {
   res.end('<h1>Answer from server on port 5000!!!!!!!!!!!!</h1> <a href="#">Link</a>')
