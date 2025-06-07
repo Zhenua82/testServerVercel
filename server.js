@@ -38,6 +38,9 @@
 
 const express = require('express');
 const mysql = require('mysql2');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -73,11 +76,9 @@ const DATA = {
 app.post('/bd', (req, res) => {
   const connection = mysql.createConnection(DATA);
   connection.connect();
-
   // const query = 'ALTER TABLE homework_human CHANGE COLUMN age telephone VARCHAR(81)';
   // let query = 'SELECT Name, photo, telephone FROM homework_human WHERE is_published = true';
   // let query = 'SELECT Name, photo, telephone, profession_id, portfolio FROM homework_human WHERE is_published = true';
-
   let query = `
     SELECT 
       hh.Name, 
@@ -89,7 +90,6 @@ app.post('/bd', (req, res) => {
     JOIN homework_profession AS hp ON hh.profession_id = hp.id
     WHERE hh.is_published = true;
     `;
-  
   connection.query(query, (error, result) => {
     if (error) {
       res.status(500).json({ error: error.message });
@@ -99,6 +99,52 @@ app.post('/bd', (req, res) => {
     connection.end();
   });
 });
+
+
+// Создаем папку media, если не существует
+if (!fs.existsSync('media')){
+    fs.mkdirSync('media');
+}
+// Настраиваем статическую отдачу файлов из media
+app.use('/media', express.static(path.join(__dirname, 'media')));
+// Настройка хранения файлов
+const storage = multer.diskStorage({
+   destination: (req, file, cb) => {
+       cb(null, 'media'); // сохраняем в папку media
+   },
+   filename: (req, file, cb) => {
+       const uniqueSuffix= Date.now() + '-' + Math.round(Math.random()*1E9);
+       cb(null, uniqueSuffix + '-' + file.originalname);
+   }
+});
+const upload=multer({storage});
+// Обработка формы
+app.post('/bdPost', upload.fields([
+   {name:'photo', maxCount :1},
+   {name:'portfolio', maxCount :10}
+]),(req,res)=>{
+   const formData= req.body;
+   // Получение путей к файлам
+   const photoFile= req.files['photo'] ? req.files['photo'][0] : null;
+   const portfolioFiles= req.files['portfolio'] || [];
+   // Пути к файлам относительно корня сервера
+   const photoPath= photoFile ? 'media/' + photoFile.filename : null;
+   const portfolioPaths= portfolioFiles.map(f => 'media/' + f.filename);
+   // В ответе возвращаем относительные пути (без домена)
+   res.json({
+     message:'Данные успешно получены',
+     data:{
+       formData,
+       photoPath,
+       portfolioPaths
+     }
+   });
+});
+
+
+
+
+
 app.get('/', (req, res) => {
   res.end('<h1>Answer from server on port 5000!!!!!!!!!!!!</h1> <a href="#">Link</a>')
 })
