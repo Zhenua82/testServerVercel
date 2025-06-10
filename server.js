@@ -153,11 +153,6 @@ app.get('/', (req, res) => {
   res.end('<h1>Answer from server on port 5000!!!!!!!!!!!!</h1> <a href="#">Link</a>');
 });
 
-// Обработка всех остальных маршрутов — вывод 404
-app.use((req, res) => {
-  res.status(404).send('<h1>404!!!</h1>');
-});
-
 // Обработка запроса /bd (существующий)
 app.post('/bd', (req, res) => {
   const connection = mysql.createConnection(DATA);
@@ -255,6 +250,11 @@ app.post('/bdPost', upload.fields([
     console.error(error);
     res.status(500).json({ error: 'Ошибка при обработке запроса' });
   }
+});
+
+// Обработка всех остальных маршрутов — вывод 404
+app.use((req, res) => {
+  res.status(404).send('<h1>404!!!</h1>');
 });
 
 // Запуск сервера
