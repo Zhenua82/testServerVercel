@@ -182,6 +182,63 @@ app.post('/bd', (req, res) => {
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+//Только для загрузки фото из portfolio (без photo):
+// app.post('/bdPost', upload.array('portfolio'), async (req, res) => {
+//   const files = req.files;
+
+//   if (!files || files.length === 0) {
+//     return res.status(400).json({ error: 'Нет загруженных файлов' });
+//   }
+
+//   try {
+//     const uploadedUrls = [];
+
+//     for (const file of files) {
+//       const form = new FormData();
+//       form.append('file', file.buffer, file.originalname);
+
+//       const response = await axios.post(
+//         'https://ce03510-wordpress-og5g7.tw1.ru/api/upload.php',
+//         form,
+//         { headers: form.getHeaders() }
+//       );
+
+//       if (response.data && response.data.fileUrl) {
+//         uploadedUrls.push(response.data.fileUrl);
+//       } else {
+//         return res.status(500).json({ error: 'Ошибка загрузки на внешний сервер' });
+//       }
+//     }
+
+//     const portfolioString = uploadedUrls.join(',');
+//     const connection = mysql.createConnection(DATA);
+//     connection.connect();
+
+//     const name = req.body.name || 'Без имени';
+//     const telephone = req.body.telephone || '';
+//     const professionId = req.body.profession_id || 9;
+//     const photo = uploadedUrls[0] || '';
+
+//     const insertQuery = `
+//       INSERT INTO homework_human (Name, photo, telephone, profession_id, portfolio, is_published)
+//       VALUES (?, ?, ?, ?, ?, true)
+//     `;
+
+//     connection.query(insertQuery, [name, photo, telephone, professionId, portfolioString], (error, result) => {
+//       connection.end();
+//       if (error) {
+//         return res.status(500).json({ error: error.message });
+//       } else {
+//         return res.json({ success: true, insertedId: result.insertId, portfolio: uploadedUrls });
+//       }
+//     });
+
+//   } catch (err) {
+//     console.error('Ошибка:', err);
+//     return res.status(500).json({ error: 'Ошибка при загрузке или записи в базу' });
+//   }
+// });
+
 // Модифицируем существующий upload, чтобы обрабатывать и одиночное, и множественные файлы
 const uploadFields = upload.fields([
   { name: 'photo', maxCount: 1 },
@@ -240,7 +297,7 @@ app.post('/bdPost', uploadFields, async (req, res) => {
 
     const name = req.body.name || 'Без имени';
     const telephone = req.body.telephone || '';
-    const professionId = req.body.profession_id || 1;
+    const professionId = req.body.profession_id || 9;
 
     const insertQuery = `
       INSERT INTO homework_human (Name, photo, telephone, profession_id, portfolio, is_published)
@@ -267,61 +324,7 @@ app.post('/bdPost', uploadFields, async (req, res) => {
   }
 });
 
-// app.post('/bdPost', upload.array('portfolio'), async (req, res) => {
-//   const files = req.files;
 
-//   if (!files || files.length === 0) {
-//     return res.status(400).json({ error: 'Нет загруженных файлов' });
-//   }
-
-//   try {
-//     const uploadedUrls = [];
-
-//     for (const file of files) {
-//       const form = new FormData();
-//       form.append('file', file.buffer, file.originalname);
-
-//       const response = await axios.post(
-//         'https://ce03510-wordpress-og5g7.tw1.ru/api/upload.php',
-//         form,
-//         { headers: form.getHeaders() }
-//       );
-
-//       if (response.data && response.data.fileUrl) {
-//         uploadedUrls.push(response.data.fileUrl);
-//       } else {
-//         return res.status(500).json({ error: 'Ошибка загрузки на внешний сервер' });
-//       }
-//     }
-
-//     const portfolioString = uploadedUrls.join(',');
-//     const connection = mysql.createConnection(DATA);
-//     connection.connect();
-
-//     const name = req.body.name || 'Без имени';
-//     const telephone = req.body.telephone || '';
-//     const professionId = req.body.profession_id || 9;
-//     const photo = uploadedUrls[0] || '';
-
-//     const insertQuery = `
-//       INSERT INTO homework_human (Name, photo, telephone, profession_id, portfolio, is_published)
-//       VALUES (?, ?, ?, ?, ?, true)
-//     `;
-
-//     connection.query(insertQuery, [name, photo, telephone, professionId, portfolioString], (error, result) => {
-//       connection.end();
-//       if (error) {
-//         return res.status(500).json({ error: error.message });
-//       } else {
-//         return res.json({ success: true, insertedId: result.insertId, portfolio: uploadedUrls });
-//       }
-//     });
-
-//   } catch (err) {
-//     console.error('Ошибка:', err);
-//     return res.status(500).json({ error: 'Ошибка при загрузке или записи в базу' });
-//   }
-// });
 
 // ==============================
 // 📌 Заглушка корневой страницы
