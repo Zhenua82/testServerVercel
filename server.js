@@ -322,7 +322,7 @@ app.post('/bdPost', uploadFields, async (req, res) => {
     //       portfolio: uploadedPortfolioUrls
     //     });
     //   }
-    // });
+    });
 
   } catch (err) {
     console.error('Ошибка:', err);
