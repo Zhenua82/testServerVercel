@@ -310,8 +310,8 @@ app.post('/bdPost', uploadFields, async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?, true)
     `;
 
-    // connection.query(insertQuery, [name, photoUrl, telephone, professionId, speciality, portfolioString], (error, result) => {
-    //   connection.end();
+    connection.query(insertQuery, [name, photoUrl, telephone, professionId, speciality, portfolioString], (error, result) => {
+      connection.end();
     //   if (error) {
     //     return res.status(500).json({ error: error.message });
     //   } else {
