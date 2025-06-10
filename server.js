@@ -42,6 +42,8 @@ const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
 const axios = require('axios');
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 require('dotenv').config();
 
 const app = express();
@@ -102,8 +104,16 @@ app.post('/bd', (req, res) => {
 
 
 
-// const mediaPath = 'https://ce03510-wordpress-og5g7.tw1.ru/api/media';
-// app.use('/media', express.static('https://ce03510-wordpress-og5g7.tw1.ru/api/media'));
+// Обеспечьте вызов cors() перед маршрутами
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
 
 // Обработка формы с файлами
 app.post('/bdPost', upload.fields([
