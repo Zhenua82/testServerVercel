@@ -42,8 +42,6 @@ const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
 const axios = require('axios');
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
 require('dotenv').config();
 
 const app = express();
@@ -104,82 +102,75 @@ app.post('/bd', (req, res) => {
 
 
 
-// // Обеспечьте вызов cors() перед маршрутами
-// app.use(cors({
-//   origin: function(origin, callback) {
-//     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   }
-// }));
+const mediaPath = 'https://ce03510-wordpress-og5g7.tw1.ru/api/media';
+// Настраиваем статическую отдачу файлов из media
+app.use('/media', express.static('https://ce03510-wordpress-og5g7.tw1.ru/api/media'));
 
-// // Обработка формы с файлами
-// app.post('/bdPost', upload.fields([
-//    {name:'photo', maxCount :1},
-//    {name:'portfolio', maxCount :10}
-// ]), async (req, res) => {
-//    const formData= req.body;
+// Обработка формы с файлами
+app.post('/bdPost', upload.fields([
+   {name:'photo', maxCount :1},
+   {name:'portfolio', maxCount :10}
+]), async (req, res) => {
+   const formData= req.body;
 
-//    // Функция для загрузки файла на внешний сервер
-//    async function uploadFileToExternalServer(file) {
-//      const formData = new FormData();
-//      formData.append('file', fs.createReadStream(file.path), file.originalname);
+   // Функция для загрузки файла на внешний сервер
+   async function uploadFileToExternalServer(file) {
+     const formData = new FormData();
+     formData.append('file', fs.createReadStream(file.path), file.originalname);
 
-//      try {
-//        const response = await axios.post(
-//          'https://ce03510-wordpress-og5g7.tw1.ru/api/upload.php',
-//          formData,
-//          {
-//            headers: {
-//              ...formData.getHeaders()
-//            }
-//          }
-//        );
-//        if (response.data.success) {
-//          return response.data.fileUrl; // URL файла
-//        } else {
-//          throw new Error(response.data.error || 'Ошибка загрузки файла');
-//        }
-//      } catch (err) {
-//        throw err;
-//      }
-//    }
+     try {
+       const response = await axios.post(
+         'https://ce03510-wordpress-og5g7.tw1.ru/api/upload.php',
+         formData,
+         {
+           headers: {
+             ...formData.getHeaders()
+           }
+         }
+       );
+       if (response.data.success) {
+         return response.data.fileUrl; // URL файла
+       } else {
+         throw new Error(response.data.error || 'Ошибка загрузки файла');
+       }
+     } catch (err) {
+       throw err;
+     }
+   }
 
-//    // Загрузка фото
-//    let photoUrl = null;
-//    if (req.files['photo'] && req.files['photo'][0]) {
-//      try {
-//        photoUrl = await uploadFileToExternalServer(req.files['photo'][0]);
-//      } catch (err) {
-//        return res.status(500).json({ error: 'Ошибка загрузки фото: ' + err.message });
-//      }
-//    }
+   // Загрузка фото
+   let photoUrl = null;
+   if (req.files['photo'] && req.files['photo'][0]) {
+     try {
+       photoUrl = await uploadFileToExternalServer(req.files['photo'][0]);
+     } catch (err) {
+       return res.status(500).json({ error: 'Ошибка загрузки фото: ' + err.message });
+     }
+   }
 
-//    // Загрузка портфолио
-//    const portfolioUrls = [];
-//    if (req.files['portfolio']) {
-//      for (const file of req.files['portfolio']) {
-//        try {
-//          const url = await uploadFileToExternalServer(file);
-//          portfolioUrls.push(url);
-//        } catch (err) {
-//          return res.status(500).json({ error: 'Ошибка загрузки портфолио: ' + err.message });
-//        }
-//      }
-//    }
+   // Загрузка портфолио
+   const portfolioUrls = [];
+   if (req.files['portfolio']) {
+     for (const file of req.files['portfolio']) {
+       try {
+         const url = await uploadFileToExternalServer(file);
+         portfolioUrls.push(url);
+       } catch (err) {
+         return res.status(500).json({ error: 'Ошибка загрузки портфолио: ' + err.message });
+       }
+     }
+   }
 
-//    // В ответе возвращаем относительные пути (без домена)
-//    res.json({
-//      message:'Данные успешно получены',
-//      data:{
-//        formData,
-//        photoPath: photoUrl,
-//        portfolioPaths: portfolioUrls
-//      }
-//    });
-// });
+   // В ответе возвращаем относительные пути (без домена)
+   res.json({
+     message:'Данные успешно получены',
+     data:{
+       formData,
+       photoPath: photoUrl,
+       portfolioPaths: portfolioUrls
+     }
+   });
+});
 
 app.get('/', (req, res) => {
   res.end('<h1>Answer from server on port 5000!!!!!!!!!!!!</h1> <a href="#">Link</a>')
