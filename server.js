@@ -112,13 +112,14 @@ const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
 const multer = require('multer');
-const axios = require('axios'); // Для отправки файлов на внешний сервер
+const axios = require('axios');
+const FormData = require('form-data');
 require('dotenv').config();
 
 const app = express();
 app.use(express.json());
 
-// Настройка CORS
+// CORS
 const allowedOrigins = [
   'https://ce03510-wordpress-og5g7.tw1.ru',
   'http://127.0.0.1:5500',
@@ -126,8 +127,8 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -135,11 +136,7 @@ app.use(cors({
   }
 }));
 
-// Настройка multer для обработки файлов
-const storage = multer.memoryStorage(); // Временное хранение в памяти
-const upload = multer({ storage });
-
-// Конфигурация базы данных
+// MySQL config
 const DATA = {
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
@@ -148,12 +145,9 @@ const DATA = {
   database: process.env.DB_DATABASE
 };
 
-// Обработка GET-запроса
-app.get('/', (req, res) => {
-  res.end('<h1>Answer from server on port 5000!!!!!!!!!!!!</h1> <a href="#">Link</a>');
-});
-
-// Обработка запроса /bd (существующий)
+// ==============================
+// 📌 POST /bd — получить список
+// ==============================
 app.post('/bd', (req, res) => {
   const connection = mysql.createConnection(DATA);
   connection.connect();
@@ -168,94 +162,97 @@ app.post('/bd', (req, res) => {
     FROM homework_human AS hh
     JOIN homework_profession AS hp ON hh.profession_id = hp.id
     WHERE hh.is_published = true;
-    `;
-  
+  `;
+
   connection.query(query, (error, result) => {
+    connection.end();
     if (error) {
       res.status(500).json({ error: error.message });
     } else {
       res.json({ message: 'Взаимодействие с бд состоялось', result });
     }
-    connection.end();
   });
 });
 
-// Новый маршрут /bdPost для обработки формы с файлами
-app.post('/bdPost', upload.fields([
-  { name: 'portfolio', maxCount: 10 }, // Максимум изображений в portfolio
-  { name: 'photo', maxCount: 1 }
-]), async (req, res) => {
+// ==============================
+// 📌 POST /bdPost — приём формы
+// ==============================
+
+// Настройка multer для загрузки файлов
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+app.post('/bdPost', upload.array('portfolio'), async (req, res) => {
+  const files = req.files;
+
+  if (!files || files.length === 0) {
+    return res.status(400).json({ error: 'Нет загруженных файлов' });
+  }
+
   try {
-    const { Name, telephone, speciality, profession_id } = req.body;
-    
-    // Проверка обязательных полей
-    if (!Name || !profession_id || !req.files['photo']) {
-      return res.status(400).json({ error: 'Отсутствуют обязательные поля' });
-    }
+    const uploadedUrls = [];
 
-    // Загрузка фото визитки на внешний сервер
-    const photoFileBuffer = req.files['photo'][0].buffer;
-    const photoUploadResponse = await axios.post('https://ce03510-wordpress-og5g7.tw1.ru/api/upload.php', photoFileBuffer, {
-      headers: {
-        'Content-Type': 'application/octet-stream'
-      }
-    });
-    
-    // Предполагается, что API возвращает имя файла или URL в ответе
-    const photoFilename = photoUploadResponse.data.filename || photoUploadResponse.data.url;
+    for (const file of files) {
+      const form = new FormData();
+      form.append('file', file.buffer, file.originalname);
 
-    // Загрузка портфолио изображений (если есть)
-    let portfolioFilenames = [];
-    if (req.files['portfolio']) {
-      for (let file of req.files['portfolio']) {
-        const buffer = file.buffer;
-        const uploadRes = await axios.post('https://ce03510-wordpress-og5g7.tw1.ru/api/upload.php', buffer, {
-          headers: { 'Content-Type': 'application/octet-stream' }
-        });
-        // Предполагается, что API возвращает имя файла или URL
-        const filenameOrUrl = uploadRes.data.filename || uploadRes.data.url;
-        portfolioFilenames.push(filenameOrUrl);
+      const response = await axios.post(
+        'https://ce03510-wordpress-og5g7.tw1.ru/api/upload.php',
+        form,
+        { headers: form.getHeaders() }
+      );
+
+      if (response.data && response.data.fileUrl) {
+        uploadedUrls.push(response.data.fileUrl);
+      } else {
+        return res.status(500).json({ error: 'Ошибка загрузки на внешний сервер' });
       }
     }
 
-    // Создаем строку для хранения портфолио (например, через запятую или JSON)
-    const portfolioData = JSON.stringify(portfolioFilenames);
-
-    // Вставляем данные в базу данных
+    const portfolioString = uploadedUrls.join(',');
     const connection = mysql.createConnection(DATA);
     connection.connect();
 
+    const name = req.body.name || 'Без имени';
+    const telephone = req.body.telephone || '';
+    const professionId = req.body.profession_id || 1;
+    const photo = uploadedUrls[0] || '';
+
     const insertQuery = `
-      INSERT INTO homework_human 
-        (Name, photo, telephone, profession_id, speciality, portfolio)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO homework_human (Name, photo, telephone, profession_id, portfolio, is_published)
+      VALUES (?, ?, ?, ?, ?, true)
     `;
-    
-    await new Promise((resolve, reject) => {
-      connection.query(
-        insertQuery,
-        [Name, photoFilename, telephone || '', profession_id, speciality || '', portfolioData],
-        (err) => {
-          if (err) reject(err);
-          else resolve();
-        }
-      );
+
+    connection.query(insertQuery, [name, photo, telephone, professionId, portfolioString], (error, result) => {
+      connection.end();
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      } else {
+        return res.json({ success: true, insertedId: result.insertId, portfolio: uploadedUrls });
+      }
     });
 
-    connection.end();
-
-    res.json({ message: 'Данные успешно сохранены' });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Ошибка при обработке запроса' });
+  } catch (err) {
+    console.error('Ошибка:', err);
+    return res.status(500).json({ error: 'Ошибка при загрузке или записи в базу' });
   }
 });
 
-// Обработка всех остальных маршрутов — вывод 404
+// ==============================
+// 📌 Заглушка корневой страницы
+// ==============================
+app.get('/', (req, res) => {
+  res.end('<h1>Answer from server on port 5000!!!!!!!!!!!!</h1> <a href="#">Link</a>');
+});
+
+// ==============================
+// 📌 Обработка всех прочих маршрутов
+// ==============================
 app.use((req, res) => {
   res.status(404).send('<h1>404!!!</h1>');
 });
 
-// Запуск сервера
+// ==============================
+// 📌 Запуск сервера
+// ==============================
 app.listen(5000, () => console.log('Server running on port 5000'));
