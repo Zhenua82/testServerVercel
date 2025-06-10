@@ -310,19 +310,54 @@ app.post('/bdPost', uploadFields, async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?, true)
     `;
 
+    // connection.query(insertQuery, [name, photoUrl, telephone, professionId, speciality, portfolioString], (error, result) => {
+    //   connection.end();
+    //   if (error) {
+    //     return res.status(500).json({ error: error.message });
+    //   } else {
+    //     return res.json({
+    //       success: true,
+    //       insertedId: result.insertId,
+    //       photo: photoUrl,
+    //       portfolio: uploadedPortfolioUrls
+    //     });
+    //   }
+    // });
+
     connection.query(insertQuery, [name, photoUrl, telephone, professionId, speciality, portfolioString], (error, result) => {
+    if (error) {
       connection.end();
-      if (error) {
-        return res.status(500).json({ error: error.message });
-      } else {
-        return res.json({
-          success: true,
-          insertedId: result.insertId,
-          photo: photoUrl,
-          portfolio: uploadedPortfolioUrls
-        });
+      return res.status(500).json({ error: error.message });
+    }
+    const selectQuery = `
+      SELECT 
+        hh.Name, 
+        hh.photo, 
+        hh.telephone, 
+        hp.title AS profession_title,
+        hh.portfolio
+      FROM homework_human AS hh
+      JOIN homework_profession AS hp ON hh.profession_id = hp.id
+      WHERE hh.is_published = true;
+    `;
+
+    connection.query(selectQuery, (selectError, selectResult) => {
+      connection.end();
+
+      if (selectError) {
+        return res.status(500).json({ error: selectError.message });
       }
+
+      return res.json({
+        success: true,
+        insertedId: result.insertId,
+        photo: photoUrl,
+        portfolio: uploadedPortfolioUrls,
+        list: selectResult // вот он — список всех записей
+      });
     });
+  });
+
 
   } catch (err) {
     console.error('Ошибка:', err);
