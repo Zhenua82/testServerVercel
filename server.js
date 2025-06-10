@@ -264,7 +264,9 @@ app.post('/bdPost', uploadFields, async (req, res) => {
       { headers: photoForm.getHeaders() }
     );
 
-    const photoUrl = photoUploadResponse.data?.fileUrl;
+    // const photoUrl = photoUploadResponse.data?.fileUrl;// дает полный URL
+    const photoFullUrl = photoUploadResponse.data?.fileUrl;
+    const photoUrl = photoFullUrl?.split('/').slice(-2).join('/'); // 'media/файл'
     if (!photoUrl) {
       return res.status(500).json({ error: 'Ошибка загрузки визитки (photo)' });
     }
@@ -283,7 +285,10 @@ app.post('/bdPost', uploadFields, async (req, res) => {
       );
 
       if (response.data && response.data.fileUrl) {
-        uploadedPortfolioUrls.push(response.data.fileUrl);
+        // uploadedPortfolioUrls.push(response.data.fileUrl);// дает полный URL
+        const relativeUrl = response.data.fileUrl.split('/').slice(-2).join('/'); // 'media/файл'
+        uploadedPortfolioUrls.push(relativeUrl);
+        
       } else {
         return res.status(500).json({ error: 'Ошибка загрузки файла портфолио' });
       }
