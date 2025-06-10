@@ -312,16 +312,16 @@ app.post('/bdPost', uploadFields, async (req, res) => {
 
     connection.query(insertQuery, [name, photoUrl, telephone, professionId, speciality, portfolioString], (error, result) => {
       connection.end();
-    //   if (error) {
-    //     return res.status(500).json({ error: error.message });
-    //   } else {
-    //     return res.json({
-    //       success: true,
-    //       insertedId: result.insertId,
-    //       photo: photoUrl,
-    //       portfolio: uploadedPortfolioUrls
-    //     });
-    //   }
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      } else {
+        return res.json({
+          success: true,
+          insertedId: result.insertId,
+          photo: photoUrl,
+          portfolio: uploadedPortfolioUrls
+        });
+      }
     });
 
   } catch (err) {
