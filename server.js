@@ -303,13 +303,14 @@ app.post('/bdPost', uploadFields, async (req, res) => {
     const name = req.body.name || 'Без имени';
     const telephone = req.body.telephone || '';
     const professionId = req.body.profession_id || 9;
+    const speciality = req.body.speciality || '';
 
     const insertQuery = `
-      INSERT INTO homework_human (Name, photo, telephone, profession_id, portfolio, is_published)
-      VALUES (?, ?, ?, ?, ?, true)
+      INSERT INTO homework_human (Name, photo, telephone, profession_id, speciality, portfolio, is_published)
+      VALUES (?, ?, ?, ?, ?, ?, true)
     `;
 
-    connection.query(insertQuery, [name, photoUrl, telephone, professionId, portfolioString], (error, result) => {
+    connection.query(insertQuery, [name, photoUrl, telephone, professionId, speciality, portfolioString], (error, result) => {
       connection.end();
       if (error) {
         return res.status(500).json({ error: error.message });
