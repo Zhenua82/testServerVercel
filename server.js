@@ -102,9 +102,8 @@ app.post('/bd', (req, res) => {
 
 
 
-const mediaPath = 'https://ce03510-wordpress-og5g7.tw1.ru/api/media';
-// Настраиваем статическую отдачу файлов из media
-app.use('/media', express.static('https://ce03510-wordpress-og5g7.tw1.ru/api/media'));
+// const mediaPath = 'https://ce03510-wordpress-og5g7.tw1.ru/api/media';
+// app.use('/media', express.static('https://ce03510-wordpress-og5g7.tw1.ru/api/media'));
 
 // Обработка формы с файлами
 app.post('/bdPost', upload.fields([
