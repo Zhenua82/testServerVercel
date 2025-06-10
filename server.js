@@ -324,40 +324,6 @@ app.post('/bdPost', uploadFields, async (req, res) => {
     //   }
     // });
 
-    connection.query(insertQuery, [name, photoUrl, telephone, professionId, speciality, portfolioString], (error, result) => {
-    if (error) {
-      connection.end();
-      return res.status(500).json({ error: error.message });
-    }
-
-    // После успешной вставки — сразу делаем SELECT как в /bd
-    const selectQuery = `
-      SELECT 
-        hh.Name, 
-        hh.photo, 
-        hh.telephone, 
-        hp.title AS profession_title,
-        hh.portfolio
-      FROM homework_human AS hh
-      JOIN homework_profession AS hp ON hh.profession_id = hp.id
-      WHERE hh.is_published = true;
-    `;
-
-    connection.query(selectQuery, (selectError, selectResult) => {
-      connection.end();
-      if (selectError) {
-        return res.status(500).json({ error: selectError.message });
-      }
-
-      return res.json({
-        success: true,
-        message: 'Данные добавлены и возвращён обновлённый список',
-        list: selectResult
-      });
-    });
-  });
-
-  
   } catch (err) {
     console.error('Ошибка:', err);
     return res.status(500).json({ error: 'Ошибка при загрузке изображений или записи в БД' });
