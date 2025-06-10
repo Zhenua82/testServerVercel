@@ -329,6 +329,8 @@ app.post('/bdPost', uploadFields, async (req, res) => {
       connection.end();
       return res.status(500).json({ error: error.message });
     }
+
+    // После успешной вставки — сразу делаем SELECT как в /bd
     const selectQuery = `
       SELECT 
         hh.Name, 
@@ -343,22 +345,19 @@ app.post('/bdPost', uploadFields, async (req, res) => {
 
     connection.query(selectQuery, (selectError, selectResult) => {
       connection.end();
-
       if (selectError) {
         return res.status(500).json({ error: selectError.message });
       }
 
       return res.json({
         success: true,
-        insertedId: result.insertId,
-        photo: photoUrl,
-        portfolio: uploadedPortfolioUrls,
-        list: selectResult // вот он — список всех записей
+        message: 'Данные добавлены и возвращён обновлённый список',
+        list: selectResult
       });
     });
   });
 
-
+  
   } catch (err) {
     console.error('Ошибка:', err);
     return res.status(500).json({ error: 'Ошибка при загрузке изображений или записи в БД' });
