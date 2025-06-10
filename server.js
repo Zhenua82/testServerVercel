@@ -38,10 +38,10 @@
 
 const express = require('express');
 const mysql = require('mysql2');
-const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
+const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
@@ -100,39 +100,74 @@ app.post('/bd', (req, res) => {
   });
 });
 
-const mediaPath = 'http://127.0.0.1:5500/nodeSalon/media';
+
+
+const mediaPath = 'https://ce03510-wordpress-og5g7.tw1.ru/api/media';
 // Настраиваем статическую отдачу файлов из media
-app.use('/media', express.static('http://127.0.0.1:5500/nodeSalon/media'));
-// Настройка хранения файлов
-const storage = multer.diskStorage({
-   destination: (req, file, cb) => {
-       cb(null, mediaPath); // используйте существующую папку
-   },
-   filename: (req, file, cb) => {
-       const uniqueSuffix= Date.now() + '-' + Math.round(Math.random()*1E9);
-       cb(null, uniqueSuffix + '-' + file.originalname);
-   }
-});
-const upload=multer({storage});
-// Обработка формы
+app.use('/media', express.static('https://ce03510-wordpress-og5g7.tw1.ru/api/media'));
+
+// Обработка формы с файлами
 app.post('/bdPost', upload.fields([
    {name:'photo', maxCount :1},
    {name:'portfolio', maxCount :10}
-]),(req,res)=>{
+]), async (req, res) => {
    const formData= req.body;
-   // Получение путей к файлам
-   const photoFile= req.files['photo'] ? req.files['photo'][0] : null;
-   const portfolioFiles= req.files['portfolio'] || [];
-   // Пути к файлам относительно корня сервера
-   const photoPath= photoFile ? 'media/' + photoFile.filename : null;
-   const portfolioPaths= portfolioFiles.map(f => 'media/' + f.filename);
+
+   // Функция для загрузки файла на внешний сервер
+   async function uploadFileToExternalServer(file) {
+     const formData = new FormData();
+     formData.append('file', fs.createReadStream(file.path), file.originalname);
+
+     try {
+       const response = await axios.post(
+         'https://ce03510-wordpress-og5g7.tw1.ru/api/upload.php',
+         formData,
+         {
+           headers: {
+             ...formData.getHeaders()
+           }
+         }
+       );
+       if (response.data.success) {
+         return response.data.fileUrl; // URL файла
+       } else {
+         throw new Error(response.data.error || 'Ошибка загрузки файла');
+       }
+     } catch (err) {
+       throw err;
+     }
+   }
+
+   // Загрузка фото
+   let photoUrl = null;
+   if (req.files['photo'] && req.files['photo'][0]) {
+     try {
+       photoUrl = await uploadFileToExternalServer(req.files['photo'][0]);
+     } catch (err) {
+       return res.status(500).json({ error: 'Ошибка загрузки фото: ' + err.message });
+     }
+   }
+
+   // Загрузка портфолио
+   const portfolioUrls = [];
+   if (req.files['portfolio']) {
+     for (const file of req.files['portfolio']) {
+       try {
+         const url = await uploadFileToExternalServer(file);
+         portfolioUrls.push(url);
+       } catch (err) {
+         return res.status(500).json({ error: 'Ошибка загрузки портфолио: ' + err.message });
+       }
+     }
+   }
+
    // В ответе возвращаем относительные пути (без домена)
    res.json({
      message:'Данные успешно получены',
      data:{
        formData,
-       photoPath,
-       portfolioPaths
+       photoPath: photoUrl,
+       portfolioPaths: portfolioUrls
      }
    });
 });
