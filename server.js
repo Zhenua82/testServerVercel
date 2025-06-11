@@ -287,8 +287,9 @@ app.post('/bdPost', uploadFields, async (req, res) => {
       if (response.data && response.data.fileUrl) {
         // uploadedPortfolioUrls.push(response.data.fileUrl);// дает полный URL
         const relativeUrl = response.data.fileUrl.split('/').slice(-2).join('/'); // 'media/файл'
-        uploadedPortfolioUrls.push(relativeUrl);
-        
+        // uploadedPortfolioUrls.push(relativeUrl);
+        const imgTag = `<img alt="" src="${relativeUrl}" style="height:380px; width:285px">`;
+        uploadedPortfolioUrls.push(imgTag);
       } else {
         return res.status(500).json({ error: 'Ошибка загрузки файла портфолио' });
       }
