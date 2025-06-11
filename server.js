@@ -301,7 +301,7 @@ app.post('/bdPost', uploadFields, async (req, res) => {
 
     const portfolioString = uploadedPortfolioUrls.join(' ');
 
-    const name = req.body.name || 'Без имени';
+    const name = req.body.Name || 'Без имени';
     const telephone = req.body.telephone || '';
     const professionId = req.body.profession_id || 9;
     const speciality = req.body.speciality || '';
