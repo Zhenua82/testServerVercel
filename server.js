@@ -288,8 +288,6 @@ app.post('/bdPost', uploadFields, async (req, res) => {
         // uploadedPortfolioUrls.push(response.data.fileUrl);// дает полный URL
         const relativeUrl = response.data.fileUrl.split('/').slice(-2).join('/');// 'media/файл'
         // uploadedPortfolioUrls.push(relativeUrl);
-        // const imgTag = `<img alt="" src="${relativeUrl}" style="height:380px; width:285px">`;
-        // const imgTag = `<img alt="" src="${response.data.fileUrl}" style="height:380px; width:285px">`;
         const imgTag = `<img alt="" src="https://ce03510-wordpress-og5g7.tw1.ru/api/${relativeUrl}" style="height:380px; width:285px">`;
         uploadedPortfolioUrls.push(imgTag);
       } else {
@@ -301,7 +299,7 @@ app.post('/bdPost', uploadFields, async (req, res) => {
     const connection = mysql.createConnection(DATA);
     connection.connect();
 
-    const portfolioString = uploadedPortfolioUrls.join(',');
+    const portfolioString = uploadedPortfolioUrls.join(' ');
 
     const name = req.body.name || 'Без имени';
     const telephone = req.body.telephone || '';
