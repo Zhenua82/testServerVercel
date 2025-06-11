@@ -266,7 +266,7 @@ app.post('/bdPost', uploadFields, async (req, res) => {
 
     // const photoUrl = photoUploadResponse.data?.fileUrl;// дает полный URL
     const photoFullUrl = photoUploadResponse.data?.fileUrl;
-    const photoUrl = photoFullUrl?.split('/').slice(-1).join('/'); // 'media/файл'
+    const photoUrl = photoFullUrl?.split('/').slice(-1).join('/'); // '/файл'
     if (!photoUrl) {
       return res.status(500).json({ error: 'Ошибка загрузки визитки (photo)' });
     }
@@ -286,10 +286,11 @@ app.post('/bdPost', uploadFields, async (req, res) => {
 
       if (response.data && response.data.fileUrl) {
         // uploadedPortfolioUrls.push(response.data.fileUrl);// дает полный URL
-        // const relativeUrl = response.data.fileUrl.split('/').slice(-2).join('/');// 'media/файл'
+        const relativeUrl = response.data.fileUrl.split('/').slice(-2).join('/');// 'media/файл'
         // uploadedPortfolioUrls.push(relativeUrl);
         // const imgTag = `<img alt="" src="${relativeUrl}" style="height:380px; width:285px">`;
-        const imgTag = `<img alt="" src="${response.data.fileUrl}" style="height:380px; width:285px">`;
+        // const imgTag = `<img alt="" src="${response.data.fileUrl}" style="height:380px; width:285px">`;
+        const imgTag = `<img alt="" src="https://ce03510-wordpress-og5g7.tw1.ru/api/${relativeUrl}" style="height:380px; width:285px">`;
         uploadedPortfolioUrls.push(imgTag);
       } else {
         return res.status(500).json({ error: 'Ошибка загрузки файла портфолио' });
