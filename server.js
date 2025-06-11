@@ -266,7 +266,7 @@ app.post('/bdPost', uploadFields, async (req, res) => {
 
     // const photoUrl = photoUploadResponse.data?.fileUrl;// дает полный URL
     const photoFullUrl = photoUploadResponse.data?.fileUrl;
-    const photoUrl = photoFullUrl?.split('/').slice(-2).join('/'); // 'media/файл'
+    const photoUrl = photoFullUrl?.split('/').slice(-1).join('/'); // 'media/файл'
     if (!photoUrl) {
       return res.status(500).json({ error: 'Ошибка загрузки визитки (photo)' });
     }
