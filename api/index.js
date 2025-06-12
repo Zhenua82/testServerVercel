@@ -305,11 +305,15 @@ const FormData = require('form-data');
 const serverless = require('serverless-http');
 require('dotenv').config();
 
+console.log('⚡ Serverless function loaded!');
+
+
 const app = express();
 
 // CORS — разрешаем все, для отладки
 app.use(cors({
-  origin: '*'
+  origin: '*',
+  methods: ['GET', 'POST'],
 }));
 
 app.use(express.json({ limit: '10mb' }));
@@ -323,7 +327,11 @@ const DATA = {
   database: process.env.DB_DATABASE
 };
 
+console.log('⚡ Serverless function loaded!');
+
 app.post('/api/bd', (req, res) => {
+  console.log('Получен запрос на /api/bd');
+  console.log('Тело запроса:', req.body);
   const connection = mysql.createConnection(DATA);
   connection.connect();
 
@@ -355,8 +363,15 @@ const uploadFields = upload.fields([
   { name: 'portfolio', maxCount: 10 }
 ]);
 
+
+console.log('⚡ Serverless function loaded!');
+
+
 app.post('/api/bdPost', (req, res) => {
   uploadFields(req, res, async function (err) {
+    console.log('Получен POST /api/bdPost');
+    console.log('Файлы:', req.files);
+    console.log('Данные формы:', req.body);
     if (err) {
       return res.status(500).json({ error: 'Ошибка при загрузке файлов' });
     }
@@ -446,6 +461,11 @@ app.post('/api/bdPost', (req, res) => {
 
 app.get('/api', (req, res) => {
   res.send('<h1>API работает</h1>');
+});
+
+app.get('/api/test', (req, res) => {
+  console.log('Проверка маршрута /api/test');
+  res.json({ message: 'Сервер работает!' });
 });
 
 module.exports = serverless(app);
