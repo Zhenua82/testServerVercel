@@ -305,10 +305,12 @@ const FormData = require('form-data');
 const serverless = require('serverless-http');
 require('dotenv').config();
 
+const app = express();
+
+// ======= Монтируем middleware до обработки запросов =======
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// CORS настройки
 const allowedOrigins = [
   'https://ce03510-wordpress-og5g7.tw1.ru',
   'http://127.0.0.1:5500',
@@ -363,7 +365,6 @@ app.post('/bd', (req, res) => {
 
 // ======= POST /bdPost — приём формы =======
 // Настройка multer для serverless (память)
-// const storage = multer.memoryStorage();
 const upload = multer({ 
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 } // 10 MB
@@ -473,5 +474,4 @@ app.get('/', (req, res) => {
 });
 
 // Экспорт
-module.exports = app;
-module.exports.handler = serverless(app);
+module.exports = serverless(app);
