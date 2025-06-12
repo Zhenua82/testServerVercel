@@ -307,7 +307,7 @@ require('dotenv').config();
 
 const app = express();
 
-// ======= Монтируем middleware до обработки запросов =======
+// ======= Middleware =======
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -327,7 +327,7 @@ app.use(cors({
   }
 }));
 
-// MySQL конфигурация
+// ======= MySQL =======
 const DATA = {
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
@@ -336,8 +336,8 @@ const DATA = {
   database: process.env.DB_DATABASE
 };
 
-// ======= POST /bd — получить список =======
-app.post('/bd', (req, res) => {
+// ======= /bd =======
+app.post('/api/bd', (req, res) => {
   const connection = mysql.createConnection(DATA);
   connection.connect();
 
@@ -363,21 +363,18 @@ app.post('/bd', (req, res) => {
   });
 });
 
-// ======= POST /bdPost — приём формы =======
-// Настройка multer для serverless (память)
+// ======= /bdPost =======
 const upload = multer({ 
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 } // 10 MB
+  limits: { fileSize: 10 * 1024 * 1024 } 
 });
-
 
 const uploadFields = upload.fields([
   { name: 'photo', maxCount: 1 },
   { name: 'portfolio', maxCount: 10 }
 ]);
 
-// Используем middleware multer вручную внутри route
-app.post('/bdPost', (req, res) => {
+app.post('/api/bdPost', (req, res) => {
   uploadFields(req, res, async function (err) {
     if (err) {
       return res.status(500).json({ error: 'Ошибка при загрузке файлов' });
@@ -468,10 +465,11 @@ app.post('/bdPost', (req, res) => {
   });
 });
 
-// ======= Заглушка GET / =======
-app.get('/', (req, res) => {
+// ======= / =======
+app.get('/api', (req, res) => {
   res.send('<h1>Vercel server работает</h1>');
 });
 
-// Экспорт
-module.exports = serverless(app);
+// ======= Экспорт =======
+module.exports = app;
+module.exports.handler = serverless(app);
