@@ -305,8 +305,8 @@ const FormData = require('form-data');
 const serverless = require('serverless-http');
 require('dotenv').config();
 
-const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // CORS настройки
 const allowedOrigins = [
@@ -363,8 +363,12 @@ app.post('/bd', (req, res) => {
 
 // ======= POST /bdPost — приём формы =======
 // Настройка multer для serverless (память)
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+// const storage = multer.memoryStorage();
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 } // 10 MB
+});
+
 
 const uploadFields = upload.fields([
   { name: 'photo', maxCount: 1 },
