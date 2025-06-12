@@ -302,7 +302,6 @@ const cors = require('cors');
 const multer = require('multer');
 const axios = require('axios');
 const FormData = require('form-data');
-const serverless = require('serverless-http');
 require('dotenv').config();
 
 console.log('⚡ Serverless function loaded!');
@@ -468,4 +467,4 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'Сервер работает!' });
 });
 
-module.exports = serverless(app);
+module.exports = app;
