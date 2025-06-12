@@ -307,27 +307,29 @@ require('dotenv').config();
 
 const app = express();
 
-// ======= Middleware =======
+// Middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// CORS — разрешённые домены
 const allowedOrigins = [
-  'https://ce03510-wordpress-og5g7.tw1.ru',
   'http://127.0.0.1:5500',
-  'https://testserver-eight-olive.vercel.app'
+  'https://ce03510-wordpress-og5g7.tw1.ru',
+  'https://testserver-eight-olive.vercel.app',
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.some(o => origin.startsWith(o))) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
-  }
+  },
+  credentials: true,
 }));
 
-// ======= MySQL =======
+// MySQL config
 const DATA = {
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
@@ -336,8 +338,8 @@ const DATA = {
   database: process.env.DB_DATABASE
 };
 
-// ======= /bd =======
-app.post('/api/bd', (req, res) => {
+// ======================== POST /bd =========================
+app.post('/bd', (req, res) => {
   const connection = mysql.createConnection(DATA);
   connection.connect();
 
@@ -358,23 +360,22 @@ app.post('/api/bd', (req, res) => {
     if (error) {
       res.status(500).json({ error: error.message });
     } else {
-      res.json({ message: 'Взаимодействие с бд состоялось', result });
+      res.json({ message: 'Взаимодействие с БД состоялось', result });
     }
   });
 });
 
-// ======= /bdPost =======
+// ======================== POST /bdPost =========================
 const upload = multer({ 
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 } 
+  limits: { fileSize: 10 * 1024 * 1024 }
 });
-
 const uploadFields = upload.fields([
   { name: 'photo', maxCount: 1 },
   { name: 'portfolio', maxCount: 10 }
 ]);
 
-app.post('/api/bdPost', (req, res) => {
+app.post('/bdPost', (req, res) => {
   uploadFields(req, res, async function (err) {
     if (err) {
       return res.status(500).json({ error: 'Ошибка при загрузке файлов' });
@@ -398,7 +399,7 @@ app.post('/api/bdPost', (req, res) => {
       );
 
       const photoFullUrl = photoUploadResponse.data?.fileUrl;
-      const photoUrl = photoFullUrl?.split('/').slice(-1).join('/');
+      const photoUrl = photoFullUrl?.split('/').pop();
 
       if (!photoUrl) {
         return res.status(500).json({ error: 'Ошибка загрузки визитки (photo)' });
@@ -429,7 +430,6 @@ app.post('/api/bdPost', (req, res) => {
       connection.connect();
 
       const portfolioString = uploadedPortfolioUrls.join(' ');
-
       const name = req.body.Name || 'Без имени';
       const telephone = req.body.telephone || '';
       const professionId = req.body.profession_id || 9;
@@ -465,11 +465,10 @@ app.post('/api/bdPost', (req, res) => {
   });
 });
 
-// ======= / =======
-app.get('/api', (req, res) => {
-  res.send('<h1>Vercel server работает</h1>');
+// ======= Заглушка GET /api =======
+app.get('/', (req, res) => {
+  res.send('<h1>Сервер работает на Vercel</h1>');
 });
 
-// ======= Экспорт =======
-module.exports = app;
-module.exports.handler = serverless(app);
+// Экспорт
+module.exports = serverless(app);
