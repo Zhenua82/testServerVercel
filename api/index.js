@@ -307,29 +307,14 @@ require('dotenv').config();
 
 const app = express();
 
-// Middleware
+// CORS — разрешаем все, для отладки
+app.use(cors({
+  origin: '*'
+}));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// CORS — разрешённые домены
-const allowedOrigins = [
-  'http://127.0.0.1:5500',
-  'https://ce03510-wordpress-og5g7.tw1.ru',
-  'https://testserver-eight-olive.vercel.app',
-];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-}));
-
-// MySQL config
 const DATA = {
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
@@ -338,8 +323,7 @@ const DATA = {
   database: process.env.DB_DATABASE
 };
 
-// ======================== POST /bd =========================
-app.post('/bd', (req, res) => {
+app.post('/api/bd', (req, res) => {
   const connection = mysql.createConnection(DATA);
   connection.connect();
 
@@ -365,17 +349,13 @@ app.post('/bd', (req, res) => {
   });
 });
 
-// ======================== POST /bdPost =========================
-const upload = multer({ 
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 }
-});
+const upload = multer({ storage: multer.memoryStorage() });
 const uploadFields = upload.fields([
   { name: 'photo', maxCount: 1 },
   { name: 'portfolio', maxCount: 10 }
 ]);
 
-app.post('/bdPost', (req, res) => {
+app.post('/api/bdPost', (req, res) => {
   uploadFields(req, res, async function (err) {
     if (err) {
       return res.status(500).json({ error: 'Ошибка при загрузке файлов' });
@@ -399,7 +379,7 @@ app.post('/bdPost', (req, res) => {
       );
 
       const photoFullUrl = photoUploadResponse.data?.fileUrl;
-      const photoUrl = photoFullUrl?.split('/').pop();
+      const photoUrl = photoFullUrl?.split('/').slice(-1).join('/');
 
       if (!photoUrl) {
         return res.status(500).json({ error: 'Ошибка загрузки визитки (photo)' });
@@ -457,7 +437,6 @@ app.post('/bdPost', (req, res) => {
           }
         }
       );
-
     } catch (err) {
       console.error('Ошибка:', err);
       return res.status(500).json({ error: 'Ошибка при загрузке изображений или записи в БД' });
@@ -465,10 +444,8 @@ app.post('/bdPost', (req, res) => {
   });
 });
 
-// ======= Заглушка GET /api =======
-app.get('/', (req, res) => {
-  res.send('<h1>Сервер работает на Vercel</h1>');
+app.get('/api', (req, res) => {
+  res.send('<h1>API работает</h1>');
 });
 
-// Экспорт
 module.exports = serverless(app);
