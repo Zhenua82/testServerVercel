@@ -241,18 +241,28 @@ export default async function handler(req, res) {
     }
 
     try {
-      const {
-        Name = '',
-        telephone = '',
-        speciality = '',
-        profession_id: rawProfessionId = '9'
-      } = fields;
+      // const {
+      //   Name = '',
+      //   telephone = '',
+      //   speciality = '',
+      //   profession_id: rawProfessionId = '9'
+      // } = fields;
 
+      const getField = (field) => Array.isArray(field) ? field[0] : field;
+
+      const Name = getField(fields.Name || '');
+      const telephone = getField(fields.telephone || '');
+      const speciality = getField(fields.speciality || '');
+      const rawProfessionId = getField(fields.profession_id || '9');
       const profession_id = parseInt(rawProfessionId, 10);
-      if (isNaN(profession_id)) {
-        return res.status(400).json({ error: 'Некорректный profession_id' });
-      }
 
+
+      // const profession_id = parseInt(rawProfessionId, 10);
+      // if (isNaN(profession_id)) {
+      //   return res.status(400).json({ error: 'Некорректный profession_id' });
+      // }
+
+      
       const photo = files.photo?.[0] || files.photo;
       const portfolioFiles = Array.isArray(files.portfolio)
         ? files.portfolio
