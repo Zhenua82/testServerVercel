@@ -1,5 +1,11 @@
 import mysql from 'mysql2/promise';
 
+const allowedOrigins = [
+  'https://ce03510-wordpress-og5g7.tw1.ru',
+  'http://127.0.0.1:5500',
+  'https://testserver-eight-olive.vercel.app'
+];
+
 const DATA = {
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
@@ -9,6 +15,18 @@ const DATA = {
 };
 
 export default async function handler(req, res) {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Метод не поддерживается' });
   }
