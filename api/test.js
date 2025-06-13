@@ -473,17 +473,7 @@
 // module.exports = app;
 
 
-const express = require('express');
-const cors = require('cors');
-const serverless = require('@vercel/node');
+export default function handler(req, res) {
+  res.status(200).json({ message: 'API работает!' });
+}
 
-const app = express();
-
-app.use(cors({ origin: '*' }));
-app.get('/api/test', (req, res) => {
-  console.log('Запрошен /api/test');
-  res.json({ ok: true });
-});
-
-module.exports = app;
-module.exports.handler = serverless(app);
