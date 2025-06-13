@@ -29,7 +29,6 @@ export default async function handler(req, res) {
   if (allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
-
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -41,14 +40,14 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Метод не поддерживается' });
   }
 
-  const form = new IncomingForm({ multiples: true, keepExtensions: true });
+  try {
+    const form = new IncomingForm({ multiples: true, keepExtensions: true });
 
-  form.parse(req, async (err, fields, files) => {
-    if (err) {
-      return res.status(500).json({ error: 'Ошибка парсинга формы' });
-    }
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        return res.status(500).json({ error: 'Ошибка парсинга формы' });
+      }
 
-    try {
       const photoFile = files.photo?.[0] || files.photo;
       const portfolioFiles = Array.isArray(files.portfolio)
         ? files.portfolio
@@ -119,9 +118,9 @@ export default async function handler(req, res) {
         photo: photoUrl,
         portfolio: uploadedPortfolioUrls
       });
-    } catch (err) {
-      console.error('Ошибка при загрузке файлов или записи в БД:', err);
-      res.status(500).json({ error: 'Ошибка при загрузке файлов или записи в БД' });
-    }
-  });
+    });
+  } catch (err) {
+    console.error('Ошибка при обработке запроса:', err);
+    res.status(500).json({ error: 'Ошибка при обработке запроса' });
+  }
 }
