@@ -2,7 +2,7 @@
 import formidable from 'formidable';
 import fs from 'fs';
 import pkg from 'pg';
-import cloudinary from '../lib/cloudinary';
+import cloudinary from '../lib/cloudinary.js';
 
 const { Pool } = pkg;
 
@@ -73,7 +73,6 @@ export default async function handler(req, res) {
       }
 
       // 🔻 1. загрузка визитки в Cloudinary
-
       const photoUploadResp = await cloudinary.uploader.upload(photo.filepath, {
         folder: 'servExpress',
         resource_type: 'image'
@@ -87,9 +86,7 @@ export default async function handler(req, res) {
       }
 
       // 🔻 2. загрузка портфолио в Cloudinary
-
       const portfolioImgs = [];
-
       for (const file of portfolioFiles) {
         const uploadResp = await cloudinary.uploader.upload(file.filepath, {
           folder: 'servExpress',
@@ -123,7 +120,6 @@ export default async function handler(req, res) {
         success: true,
         message: 'Данные успешно сохранены',
         insertedId: result.rows[0].id,
-        // photo: photoFileName,
         photo: photoUrl,
         portfolioCount: portfolioImgs.length
       });
