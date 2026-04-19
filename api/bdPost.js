@@ -168,10 +168,23 @@ const pool = new Pool({
 
 export default async function handler(req, res) {
 
-  const origin = req.headers.origin;
+  // const origin = req.headers.origin;
+
   // if (allowedOrigins.includes(origin)) {
   //   res.setHeader('Access-Control-Allow-Origin', origin);
   // }
+
+
+  const origin = req.headers.origin;
+  res.setHeader(
+    'Access-Control-Allow-Origin',
+    allowedOrigins.includes(origin) ? origin : '*'
+  );
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
   res.setHeader('Access-Control-Allow-Origin', '*');
 
