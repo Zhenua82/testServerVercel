@@ -2,7 +2,6 @@
 import formidable from 'formidable';
 import fs from 'fs';
 import pkg from 'pg';
-import FormData from 'form-data';
 import cloudinary from '../lib/cloudinary';
 
 const { Pool } = pkg;
@@ -86,12 +85,6 @@ export default async function handler(req, res) {
       if (!photoPublicId) {
         return res.status(500).json({ error: 'Ошибка при загрузке визитки' });
       }
-
-      // const photoFileName = photoUploadResp.data?.fileUrl?.split('/').pop();
-      // if (!photoFileName) {
-      //   return res.status(500).json({ error: 'Ошибка при загрузке визитки' });
-      // }
-
 
       // 🔻 2. загрузка портфолио в Cloudinary
 
