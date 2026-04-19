@@ -145,6 +145,7 @@ import fs from 'fs';
 import pkg from 'pg';
 import axios from 'axios';
 import FormData from 'form-data';
+import cloudinary from '../lib/cloudinary';
 
 const { Pool } = pkg;
 
@@ -210,42 +211,88 @@ export default async function handler(req, res) {
       }
 
       // 🔻 1. загрузка визитки
-      const photoForm = new FormData();
-      photoForm.append('file', fs.createReadStream(photo.filepath), photo.originalFilename);
+      // const photoForm = new FormData();
+      // photoForm.append('file', fs.createReadStream(photo.filepath), photo.originalFilename);
 
-      const photoUploadResp = await axios.post(
-        'https://ce03510-wordpress-og5g7.tw1.ru/api/upload.php',
-        photoForm,
-        { headers: photoForm.getHeaders() }
-      );
+      // const photoUploadResp = await axios.post(
+      //   'https://ce03510-wordpress-og5g7.tw1.ru/api/upload.php',
+      //   photoForm,
+      //   { headers: photoForm.getHeaders() }
+      // );
 
-      const photoFileName = photoUploadResp.data?.fileUrl?.split('/').pop();
-      if (!photoFileName) {
+      // const photoFileName = photoUploadResp.data?.fileUrl?.split('/').pop();
+      // if (!photoFileName) {
+      //   return res.status(500).json({ error: 'Ошибка при загрузке визитки' });
+      // }
+
+      // 🔻 1. загрузка визитки в Cloudinary
+      const photoUploadResp = await cloudinary.uploader.upload(photo.filepath, {
+        folder: 'servExpress',
+        resource_type: 'image'
+      });
+
+      const photoPublicId = photoUploadResp.public_id;
+      const photoUrl = photoUploadResp.secure_url;
+
+      if (!photoPublicId) {
         return res.status(500).json({ error: 'Ошибка при загрузке визитки' });
       }
 
       // 🔻 2. загрузка портфолио
+      // const portfolioImgs = [];
+      // for (const file of portfolioFiles) {
+      //   const pfForm = new FormData();
+      //   pfForm.append('file', fs.createReadStream(file.filepath), file.originalFilename);
+
+      //   const response = await axios.post(
+      //     'https://ce03510-wordpress-og5g7.tw1.ru/api/upload.php',
+      //     pfForm,
+      //     { headers: pfForm.getHeaders() }
+      //   );
+
+      //   const relativeUrl = response.data?.fileUrl?.split('/').slice(-2).join('/');
+      //   if (!relativeUrl) continue;
+
+      //   const imgTag = `<img alt="" src="https://ce03510-wordpress-og5g7.tw1.ru/api/${relativeUrl}" style="height:380px; width:285px">`;
+      //   portfolioImgs.push(imgTag);
+      // }
+
+      // const portfolioHTML = portfolioImgs.join(' ');
+
+      // 🔻 2. загрузка портфолио в Cloudinary
+
       const portfolioImgs = [];
+
       for (const file of portfolioFiles) {
-        const pfForm = new FormData();
-        pfForm.append('file', fs.createReadStream(file.filepath), file.originalFilename);
+        const uploadResp = await cloudinary.uploader.upload(file.filepath, {
+          folder: 'servExpress',
+          resource_type: 'image'
+        });
 
-        const response = await axios.post(
-          'https://ce03510-wordpress-og5g7.tw1.ru/api/upload.php',
-          pfForm,
-          { headers: pfForm.getHeaders() }
-        );
+        const imgTag = `<img alt="" src="${uploadResp.secure_url}" style="height:380px; width:285px">`;
 
-        const relativeUrl = response.data?.fileUrl?.split('/').slice(-2).join('/');
-        if (!relativeUrl) continue;
-
-        const imgTag = `<img alt="" src="https://ce03510-wordpress-og5g7.tw1.ru/api/${relativeUrl}" style="height:380px; width:285px">`;
         portfolioImgs.push(imgTag);
       }
-
       const portfolioHTML = portfolioImgs.join(' ');
 
+
       // 🔻 3. запись в PostgreSQL
+      // const result = await pool.query(
+      //   `INSERT INTO homework_human 
+      //   ("Name", photo, telephone, profession_id, speciality, portfolio, is_published)
+      //   VALUES ($1, $2, $3, $4, $5, $6, true)
+      //   RETURNING id`,
+      //   [
+      //     Name,
+      //     photoFileName,
+      //     telephone,
+      //     profession_id,
+      //     speciality,
+      //     portfolioHTML
+      //   ]
+      // );
+
+
       const result = await pool.query(
         `INSERT INTO homework_human 
         ("Name", photo, telephone, profession_id, speciality, portfolio, is_published)
@@ -253,7 +300,7 @@ export default async function handler(req, res) {
         RETURNING id`,
         [
           Name,
-          photoFileName,
+          photoPublicId,
           telephone,
           profession_id,
           speciality,
@@ -265,7 +312,8 @@ export default async function handler(req, res) {
         success: true,
         message: 'Данные успешно сохранены',
         insertedId: result.rows[0].id,
-        photo: photoFileName,
+        // photo: photoFileName,
+        photo: photoUrl,
         portfolioCount: portfolioImgs.length
       });
 
