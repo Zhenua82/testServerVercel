@@ -169,9 +169,11 @@ const pool = new Pool({
 export default async function handler(req, res) {
 
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
+  // if (allowedOrigins.includes(origin)) {
+  //   res.setHeader('Access-Control-Allow-Origin', origin);
+  // }
+
+  res.setHeader('Access-Control-Allow-Origin', '*');
 
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -226,6 +228,9 @@ export default async function handler(req, res) {
       // }
 
       // 🔻 1. загрузка визитки в Cloudinary
+      const photoForm = new FormData();
+      photoForm.append('file', fs.createReadStream(photo.filepath), photo.originalFilename);
+
       const photoUploadResp = await cloudinary.uploader.upload(photo.filepath, {
         folder: 'servExpress',
         resource_type: 'image'
@@ -235,6 +240,11 @@ export default async function handler(req, res) {
       const photoUrl = photoUploadResp.secure_url;
 
       if (!photoPublicId) {
+        return res.status(500).json({ error: 'Ошибка при загрузке визитки' });
+      }
+
+      const photoFileName = photoUploadResp.data?.fileUrl?.split('/').pop();
+      if (!photoFileName) {
         return res.status(500).json({ error: 'Ошибка при загрузке визитки' });
       }
 
