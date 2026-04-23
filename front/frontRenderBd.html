@@ -52,7 +52,7 @@ const handleUpdate = async () => {
     const data = await response.json();
     localStorage.setItem('personData', JSON.stringify(data.result));
     // window.open('viewData.html', '_blank');
-    window.open('/front/viewData.html', '_blank');
+    // window.open('/front/viewData.html', '_blank');
     window.open('https://testserver-eight-olive.vercel.app/front/viewData.html', '_blank');
   } catch (error) {
     console.error('Ошибка:', error);
