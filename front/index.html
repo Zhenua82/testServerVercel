@@ -134,7 +134,7 @@ Node.js скрипт выполняется один раз (как обычна
         style="color: blue; font-size: 1.1em; font-weight: bold;">
         ▶ Работа с сервером render.com (c использованием express) и бд Neon
       </a><br> -->
-      <a href="#" onclick="handleUpdate(); return false;" style="color: blue; font-size: 1.1em; font-weight: bold;">
+      <a href="#" onclick="handleUpdateRender(); return false;" style="color: blue; font-size: 1.1em; font-weight: bold;">
         ▶ Работа с сервером render.com (c использованием express) и бд Neon
       </a><br>
       <!-- <a href="/front/frontVercelBd.html" target="_blank"
@@ -145,7 +145,7 @@ Node.js скрипт выполняется один раз (как обычна
         style="color: blue; font-size: 1.1em; font-weight: bold; cursor: pointer;">
         ▶ Работа с сервером vercel.com (в среде Vercel Serverless Functions без использования express) и бд Neon
       </div><br> -->
-      <a href="#" onclick="handleUpdate(); return false;" style="color: blue; font-size: 1.1em; font-weight: bold;" >
+      <a href="#" onclick="handleUpdateVercel(); return false;" style="color: blue; font-size: 1.1em; font-weight: bold;" >
         ▶ Работа с сервером vercel.com (в среде Vercel Serverless Functions без использования express) и бд Neon
       </a>
       <a href="/front/front.html" target="_blank"
@@ -167,7 +167,7 @@ Node.js скрипт выполняется один раз (как обычна
   <script>
     fetch('https://testserverrender.onrender.com/') // Это тоже проснёт его
 
-    const handleUpdate = async () => {
+    const handleUpdateRender = async () => {
       try {
         const response = await fetch('https://testserverrender.onrender.com/bd', { method: 'POST' });
         if (!response.ok) {
@@ -177,7 +177,24 @@ Node.js скрипт выполняется один раз (как обычна
         }
         const data = await response.json();
         localStorage.setItem('personData', JSON.stringify(data.result));
-        window.location.href = '/front/viewData.html';
+        window.location.href = 'https://testserverrender.onrender.com/front/viewData.html';
+      } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Произошла ошибка при выполнении запроса: ' + error.message);
+      } 
+    };
+
+    const handleUpdateVercel = async () => {
+      try {
+        const response = await fetch('https://testserver-eight-olive.vercel.app/api/bd', { method: 'POST' });
+        if (!response.ok) {
+          const errText = await response.text();
+          alert('Ошибка при запросе к серверу: ' + errText);
+          return;
+        }
+        const data = await response.json();
+        localStorage.setItem('personData', JSON.stringify(data.result));
+        window.location.href = 'https://testserver-eight-olive.vercel.app/front/viewData.html';
       } catch (error) {
         console.error('Ошибка:', error);
         alert('Произошла ошибка при выполнении запроса: ' + error.message);
