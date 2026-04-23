@@ -42,21 +42,49 @@
 fetch('https://testserverrender.onrender.com/');
 
 const handleUpdate = async () => {
+  // try {
+  //   const response = await fetch('https://testserverrender.onrender.com/bd', { method: 'POST' });
+  //   if (!response.ok) {
+  //     const errText = await response.text();
+  //     alert('Ошибка при запросе к серверу: ' + errText);
+  //     return;
+  //   }
+  //   const data = await response.json();
+  //   localStorage.setItem('personData', JSON.stringify(data.result));
+  //   // window.open('viewData.html', '_blank');
+  //   // window.open('/front/viewData.html', '_blank');
+  //   window.open('https://testserver-eight-olive.vercel.app/front/viewData.html', '_blank');
+  // } catch (error) {
+  //   console.error('Ошибка:', error);
+  //   alert('Произошла ошибка при выполнении запроса: ' + error.message);
+  // }
+
+  // ✅ открываем вкладку СРАЗУ (иначе браузер заблокирует)
+  const newWindow = window.open('about:blank', '_blank');
   try {
-    const response = await fetch('https://testserverrender.onrender.com/bd', { method: 'POST' });
+    const response = await fetch('https://testserverrender.onrender.com/bd', {
+      method: 'POST'
+    });
+
     if (!response.ok) {
       const errText = await response.text();
-      alert('Ошибка при запросе к серверу: ' + errText);
+      alert('Ошибка: ' + errText);
+      newWindow.close();
       return;
     }
+
     const data = await response.json();
+
+    // сохраняем данные
     localStorage.setItem('personData', JSON.stringify(data.result));
-    // window.open('viewData.html', '_blank');
-    // window.open('/front/viewData.html', '_blank');
-    window.open('https://testserver-eight-olive.vercel.app/front/viewData.html', '_blank');
+
+    // ✅ редиректим открытую вкладку
+    newWindow.location.href = '/front/viewData.html';
+
   } catch (error) {
     console.error('Ошибка:', error);
-    alert('Произошла ошибка при выполнении запроса: ' + error.message);
+    alert('Ошибка: ' + error.message);
+    newWindow.close();
   }
 };
 
