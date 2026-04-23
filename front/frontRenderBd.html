@@ -210,33 +210,38 @@ document.getElementById('btnLoad').addEventListener('click', async () => {
 // ==========================
 // ОТПРАВКА ФОРМЫ
 // ==========================
-document.getElementById('myForm').addEventListener('submit', async function (event) {
-  event.preventDefault();
+document.getElementById('btnLoad').addEventListener('click', async () => {
 
-  if (!isServerReady) {
-    alert('Сервер запускается, подождите...');
-    return;
-  }
-
-  const formData = new FormData(this);
+  const newWindow = window.open('', '_blank');
 
   try {
-    const response = await fetch('https://testserverrender.onrender.com/bdPost', {
-      method: 'POST',
-      body: formData
+    const response = await fetch('https://testserverrender.onrender.com/bd', {
+      method: 'POST'
     });
 
-    const result = await response.json();
+    if (!response.ok) {
+      alert('Ошибка запроса');
 
-    if (response.ok && result.success) {
-      alert('Успешно отправлено');
-      this.reset();
+      if (newWindow) newWindow.close();
+      return;
+    }
+
+    const data = await response.json();
+
+    localStorage.setItem('personData', JSON.stringify(data.result));
+
+    if (newWindow) {
+      // если окно открылось
+      newWindow.location.href = 'https://testserver-eight-olive.vercel.app/front/viewData.html';
     } else {
-      alert('Ошибка: ' + (result.error || 'неизвестная'));
+      // если popup заблокирован — fallback
+      window.location.href = '/front/viewData.html';
     }
 
   } catch (error) {
-    alert('Сетевая ошибка: ' + error.message);
+    alert('Ошибка: ' + error.message);
+
+    if (newWindow) newWindow.close();
   }
 });
 </script>
