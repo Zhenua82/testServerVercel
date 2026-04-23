@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Данные из БД</title>
+  <link rel="stylesheet" href="css/personList.css" />
+</head>
+<body>
+  <h1>Список мастеров:</h1>
+  <div id="result"></div>
+
+  <script>
+  const rawData = localStorage.getItem('personData');
+  const resultDiv = document.getElementById('result');
+
+  if (!rawData || rawData === '[]') {
+    resultDiv.textContent = 'Нет данных';
+  } else {
+    const data = JSON.parse(rawData);
+    resultDiv.innerHTML = ''; // Очистить при повторном заходе
+
+    data.forEach(person => {
+      const container = document.createElement('div');
+      container.className = 'person';
+
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'name';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = person.Name;
+
+      const telDiv = document.createElement('div');
+      telDiv.innerHTML = person.telephone;
+
+      headerDiv.appendChild(nameSpan);
+      headerDiv.appendChild(telDiv);
+
+      const img = document.createElement('img');
+      // img.src = 'https://ce03510-wordpress-og5g7.tw1.ru/api/media/' + person.photo;
+      img.src = 'https://res.cloudinary.com/dbynsbahm/image/upload/v1776595857/' + person.photo;
+      img.className = 'photo';
+
+      const button = document.createElement('button');
+      button.className = 'button';
+      button.innerHTML = 'Подробнее';
+      button.addEventListener('click', () => {
+        const url = new URL('master.html', window.location.origin);
+        url.searchParams.set('name', encodeURIComponent(person.Name));
+        url.searchParams.set('profession_id', person.profession_title);
+        url.searchParams.set('portfolio', person.portfolio);
+        window.location.href = url.toString();
+      });
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.innerHTML = '🗑';
+      deleteBtn.title = 'Удалить';
+      deleteBtn.onclick = async () => {
+        if (!confirm(`Удалить ${person.Name}?`)) return;
+        try {
+          const delRes = await fetch('https://testserverrender.onrender.com/deletePerson', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              photo: person.photo,
+              portfolio: person.portfolio
+            })
+          });
+          const result = await delRes.json();
+          if (result.success) {
+            container.remove();
+
+            // Удаляем из localStorage текущего пользователя
+            const updatedData = data.filter(p => p.photo !== person.photo);
+            localStorage.setItem('personData', JSON.stringify(updatedData));
+          } else {
+            alert('Ошибка при удалении');
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Ошибка при удалении');
+        }
+      };
+
+      container.appendChild(deleteBtn);
+      container.appendChild(headerDiv);
+      container.appendChild(img);
+      container.appendChild(button);
+      resultDiv.appendChild(container);
+    });
+  }
+</script>
+
+</body>
+</html>

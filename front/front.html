@@ -1,0 +1,86 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        const root = document.getElementById('root')
+        const myButton = document.createElement('button')
+        myButton.append('Кнопка для добавления')
+        myButton.addEventListener('click', 
+        async () => {     
+                const response = await fetch('http://localhost:5000');
+                const data = await response.text();
+                // root.append(data); 
+                // root.innerHTML += data; 
+                root.insertAdjacentHTML('beforeend', data);
+        })
+        root.append(myButton)
+    </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #root {
+            width: 80%;
+            margin: auto;
+        }
+        .item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+        .delete-button {
+            cursor: pointer;
+            color: red;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        const root = document.getElementById('root');
+        const myButton = document.createElement('button');
+        myButton.append('Кнопка для добавления');
+
+        myButton.addEventListener('click', async () => {     
+            // const response = await fetch('https://testserver-eight-olive.vercel.app/');
+            const response = await fetch('https://testserver-eight-olive.vercel.app/api/front');
+            const data = await response.text();
+            
+            // Создаем контейнер для нового элемента
+            const itemContainer = document.createElement('div');
+            itemContainer.classList.add('item');
+
+            // Добавляем HTML-код в контейнер
+            itemContainer.innerHTML = `
+                ${data}
+                <span class="delete-button">🗑️</span>
+            `;
+
+            // Добавляем обработчик события для кнопки удаления
+            const deleteButton = itemContainer.querySelector('.delete-button');
+            deleteButton.addEventListener('click', () => {
+                root.removeChild(itemContainer);
+            });
+
+            // Добавляем новый элемент в корень
+            root.appendChild(itemContainer);
+        });
+
+        root.append(myButton);
+    </script>
+</body>
+</html>

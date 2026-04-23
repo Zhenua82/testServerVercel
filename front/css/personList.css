@@ -1,0 +1,58 @@
+#result {
+  max-height: 94%;
+}
+h1{
+  margin-bottom: 20px;
+  text-align: center;
+}
+.person {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: auto;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+  position: relative;
+  /* justify-content: center;
+  align-items: center; */
+  /* align-content: center; */
+}
+
+.name {
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.photo {
+  margin-top: 10px;
+  max-width: 100%;
+  height: auto;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: red;
+}
+
+.button {
+  margin-top: 8px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}

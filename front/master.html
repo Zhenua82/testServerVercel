@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Информация о мастере</title>
+<style>
+  /* Общие стили для страницы */
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Центрируем всё по горизонтали */
+    color: #333;
+  }
+
+  h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 20px;
+  }
+
+  /* Стиль для блока с информацией */
+  #info {
+    background-color: #fff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 800px;
+    width: 100%;
+    margin-bottom: 30px;
+  }
+
+  p {
+    font-size: 1.2em;
+    margin: 10px 0;
+  }
+
+  strong {
+    color: #34495e;
+  }
+
+  /* Заголовок для портфолио */
+  h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-top: 40px;
+    margin-bottom: 20px;
+  }
+
+  /* Контейнер для портфолио (таблицы) */
+  #portfolio {
+    display: flex;
+    justify-content: center; /* Центрируем таблицу */
+    overflow-x: auto; /* Для мобильных устройств, чтобы таблица не вылезала за границы */
+  }
+
+  /* Таблица с фотографиями портфолио */
+  table {
+    border-collapse: collapse; 
+    width: auto; /* ширина по содержимому */
+    max-width: 100%;
+    border-radius: 10px; 
+    overflow: hidden; 
+    box-shadow: inset -1px -1px 5px rgba(0,0,0,0.1);
+}
+
+table tbody tr:nth-child(even) {
+   background-color: #fafafa; 
+}
+
+td {
+   padding:10px; 
+   border:none; 
+}
+
+/* Стиль для изображений в портфолио */
+img {
+   display:block; 
+   border-radius:8px; 
+   box-shadow:0 2px 8px rgba(0,0,0,0.1);
+   cursor:pointer;
+   transition: transform 0.3s ease, box-shadow 0.3s ease; /* плавность эффектов */
+   /* max-width:auto; 
+   height:auto; 
+   width:auto;
+   max-height:320px; */
+}
+
+/* Адаптивность для мобильных устройств */
+@media(max-width:600px){
+   body {
+     padding:10px;
+   }
+   
+   p {
+     font-size:1em;
+   }
+   
+   table {
+     width:auto !important;
+   }
+}
+
+/* Стиль для увеличенного изображения (модального окна) */
+
+#image-modal {
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  background-color:#000a; /* полупрозрачный фон */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:.0001;
+  pointer-events:none; /* чтобы не мешать кликам когда не видно */
+  transition:.3s ease opacity;
+}
+#image-modal.show {
+  opacity:.9999;
+  pointer-events:auto;
+}
+
+#image-modal img {
+        max-width:auto !important;
+        max-height:auto !important;
+        width:auto;
+        height:auto;
+        max-width:max(90vw,600px);
+        max-height:max(90vh,600px);
+        border-radius:.5em;
+        box-shadow:.2em .2em .5em rgba(0,0,0,.4);
+        transition:.3s ease transform;
+}
+</style>
+</head>
+<body>
+
+<h1>Информация о мастере</h1>
+
+<div id="master-info">
+<!-- Ваши данные -->
+<p><strong>Имя:</strong> <span id="name"></span></p>
+<p><strong>Профессия ID:</strong> <span id="profession_id"></span></p>
+<h2>Портфолио</h2>
+<div id="portfolio"></div>
+</div>
+
+<!-- Модальное окно для увеличенного изображения -->
+<div id="image-modal">
+ <img src="" alt="Увеличенное изображение" />
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const name = params.get('name') || 'Неизвестно';
+const profession_title = params.get('profession_id') || 'Неизвестно';
+const portfolio = params.get('portfolio') || '';
+
+// Вывод данных на страницу
+document.getElementById('name').textContent = decodeURIComponent(name);
+document.getElementById('profession_id').textContent = decodeURIComponent(profession_title);
+document.getElementById('portfolio').innerHTML = portfolio;
+
+// Обработчик клика по изображениям портфолио
+document.getElementById('portfolio').addEventListener('click', function(e) {
+ if(e.target.tagName.toLowerCase() === 'img') {
+     const src = e.target.src;
+
+     const modal = document.getElementById('image-modal');
+     const modalImg = modal.querySelector('img');
+
+     modalImg.src = src;
+
+     // Можно добавить эффект масштабирования или анимацию
+     modal.classList.add('show');
+ }
+});
+
+// Обработчик закрытия модального окна при клике вне изображения или по ESC
+document.getElementById('image-modal').addEventListener('click', function() {
+ const modal = document.getElementById('image-modal');
+ modal.classList.remove('show');
+});
+
+// Также можно закрывать по клавише ESC
+document.addEventListener('keydown', function(e) {
+ if(e.key === 'Escape') {
+     document.getElementById('image-modal').classList.remove('show');
+ }
+});
+</script>
+
+</body>
+</html>
