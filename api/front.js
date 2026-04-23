@@ -50,8 +50,7 @@ export default function handler(req, res) {
   //   return;
   // }
 
-  // const origin = req.headers.origin;
-
+  const origin = req.headers.origin;
   const isAllowed =
     !origin ||
     allowedOrigins.some(o => origin.startsWith(o));
