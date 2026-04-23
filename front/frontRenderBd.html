@@ -41,21 +41,6 @@
   // прогреваем Render при первой загрузке страницы
 fetch('https://testserverrender.onrender.com/');
 
-// const handleUpdate = async () => {
-//   try {
-//     const response = await fetch('https://testserverrender.onrender.com/bd', { method: 'POST' });
-//     if (!response.ok) {
-//       alert('Ошибка при запросе к серверу');
-//       return;
-//     }
-//     const data = await response.json();
-//     localStorage.setItem('personData', JSON.stringify(data.result));
-//     window.open('viewData.html', '_blank');
-//   } catch (error) {
-//     console.error('Ошибка:', error);
-//     alert('Произошла ошибка при выполнении запроса.');
-//   }
-// };
 const handleUpdate = async () => {
   try {
     const response = await fetch('https://testserverrender.onrender.com/bd', { method: 'POST' });
@@ -68,37 +53,14 @@ const handleUpdate = async () => {
     localStorage.setItem('personData', JSON.stringify(data.result));
     // window.open('viewData.html', '_blank');
     window.open('/front/viewData.html', '_blank');
+    window.open('https://testserver-eight-olive.vercel.app/front/viewData.html', '_blank');
   } catch (error) {
     console.error('Ошибка:', error);
     alert('Произошла ошибка при выполнении запроса: ' + error.message);
   }
 };
 
-// document.getElementById('myForm').addEventListener('submit', async function (event) {
-//   event.preventDefault();
-//   const form = event.target;
-//   const formData = new FormData(form);
-//   try {
-//     // const response = await fetch('http://localhost:5000/bdPost', {
-//     const response = await fetch('https://testserverrender.onrender.com/bdPost', {
-//       method: 'POST',
-//       body: formData
-//     });
-//     const result = await response.json();
-//     if (response.ok && result.success) {
-//       console.log("Форма успешно отправлена!", result);
-//       handleUpdate();
-//       form.reset();
-//     } else {
-//       console.error("Ошибка при отправке формы:", result);
-//     }
-//   } catch (error) {
-//     console.error("Ошибка при запросе:", error);
-//   }
-// });
-
 let isServerReady = false;
-
 // Прогреваем Render сервер
 const warmUpServer = async () => {
   try {
