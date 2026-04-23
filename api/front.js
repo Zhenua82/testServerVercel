@@ -38,11 +38,26 @@ const allowedOrigins = [
 ];
 
 export default function handler(req, res) {
-  const origin = req.headers.origin;
+  // const origin = req.headers.origin;
 
-  // Проверяем, соответствует ли Origin разрешенным
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
+  // // Проверяем, соответствует ли Origin разрешенным
+  // if (allowedOrigins.includes(origin)) {
+  //   res.setHeader('Access-Control-Allow-Origin', origin);
+  //   res.setHeader('Content-Type', 'text/html');
+  // } else {
+  //   res.status(403).setHeader('Content-Type', 'text/html');
+  //   res.end('<h1>403 Forbidden: Access is denied</h1>');
+  //   return;
+  // }
+
+  // const origin = req.headers.origin;
+
+  const isAllowed =
+    !origin ||
+    allowedOrigins.some(o => origin.startsWith(o));
+
+  if (isAllowed) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
     res.setHeader('Content-Type', 'text/html');
   } else {
     res.status(403).setHeader('Content-Type', 'text/html');
