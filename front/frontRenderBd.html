@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -53,7 +53,8 @@ const handleUpdate = async () => {
     localStorage.setItem('personData', JSON.stringify(data.result));
     // window.open('viewData.html', '_blank');
     // window.open('/front/viewData.html', '_blank');
-    window.open('https://testserver-eight-olive.vercel.app/front/viewData.html', '_blank');
+    // window.open('https://testserver-eight-olive.vercel.app/front/viewData.html', '_blank');
+    window.location.href = '/front/viewData.html';
   } catch (error) {
     console.error('Ошибка:', error);
     alert('Произошла ошибка при выполнении запроса: ' + error.message);
@@ -109,10 +110,10 @@ document.getElementById('myForm').addEventListener('submit', async function (eve
 </script>
 
 </body>
-</html> -->
+</html>
 
 
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -247,4 +248,4 @@ document.getElementById('btnLoad').addEventListener('click', async () => {
 </script>
 
 </body>
-</html>
+</html> -->
