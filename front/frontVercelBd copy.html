@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Данные из БД</title>
+<link rel="stylesheet" href="css/cssForm.css">
+<style>
+  #result {
+    max-height: 94%;
+  }
+  .person {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    position: relative;
+  }
+  .name {
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .photo {
+    margin-top: 10px;
+    max-width: 100%;
+    height: auto;
+  }
+  .delete-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: red;
+  }
+</style>
+</head>
+<body>
+<h1>Работа с сервером vercel.com</h1>
+<div>
+  <button onclick="handleUpdate()">Запрос в бд</button>
+</div>
+
+<form id="myForm" enctype="multipart/form-data">
+  <label for="name">Name (макс 9 символов):</label><br>
+  <input type="text" id="name" name="Name" maxlength="9" required><br><br>
+  <label for="photo">Photo (визитка):</label><br>
+  <input type="file" id="photo" name="photo" accept="image/*" required><br><br>
+  <label for="portfolio">Portfolio (несколько изображений):</label><br>
+  <input type="file" id="portfolio" name="portfolio" accept="image/*" multiple><br><br>
+  <label for="speciality">Speciality:</label><br>
+  <input type="text" id="speciality" name="speciality" maxlength="27"><br><br>
+  <label for="profession_id">Profession ID:</label><br>
+  <select id="profession_id" name="profession_id" required>
+    <option value="">Выберите профессию</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+    <option value="9">9</option>
+  </select><br><br>
+  <label for="telephone">Telephone:</label><br>
+  <input type="text" id="telephone" name="telephone" maxlength="81"><br><br>
+
+  <button type="submit">Отправить</button>
+</form>
+
+<div id="result"></div>
+
+<script>
+const handleUpdate = async () => {
+  try {
+    const response = await fetch('https://testserver-eight-olive.vercel.app/api/bd', { method: 'POST' });
+
+    if (!response.ok) {
+      alert('Ошибка при запросе к серверу');
+      return;
+    }
+
+    const data = await response.json();
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = '';
+
+    data.result.forEach(person => {
+      const container = document.createElement('div');
+      container.className = 'person';
+
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'name';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = person.Name;
+
+      const telDiv = document.createElement('div');
+      telDiv.innerHTML = person.telephone;
+
+      headerDiv.appendChild(nameSpan);
+      headerDiv.appendChild(telDiv);
+
+      const img = document.createElement('img');
+      // img.src = 'https://ce03510-wordpress-og5g7.tw1.ru/api/media/' + person.photo;
+      img.src = 'https://res.cloudinary.com/dbynsbahm/image/upload/v1776595857/' + person.photo;
+      img.className = 'photo';
+
+      const button = document.createElement('button');
+      button.className = 'button';
+      button.innerHTML = 'Подробнее';
+      button.addEventListener('click', () => {
+        // const url = new URL('master.html', window.location.origin);
+        const url = new URL('/front/master.html', window.location.origin);
+        url.searchParams.set('name', encodeURIComponent(person.Name));
+        url.searchParams.set('profession_id', person.profession_title);
+        url.searchParams.set('portfolio', person.portfolio);
+        window.location.href = url.toString();
+      });
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.innerHTML = '🗑'; // значок мусорки 🗑️
+      deleteBtn.title = 'Удалить';
+      deleteBtn.onclick = async () => {
+        if (!confirm(`Удалить ${person.Name}?`)) return;
+        try {
+          const delRes = await fetch('https://testserver-eight-olive.vercel.app/api/deletePerson', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              photo: person.photo,
+              portfolio: person.portfolio
+            })
+          });
+          const result = await delRes.json();
+          if (result.success) {
+            container.remove();
+          } else {
+            alert('Ошибка при удалении');
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Ошибка при удалении');
+        }
+      };
+
+      container.appendChild(deleteBtn);
+      container.appendChild(headerDiv);
+      container.appendChild(img);
+      container.appendChild(button);
+
+      resultDiv.appendChild(container);
+    });
+  } catch (error) {
+    console.error('Ошибка:', error);
+    alert('Произошла ошибка при выполнении запроса.');
+  }
+};
+
+document.getElementById('myForm').addEventListener('submit', async function (event) {
+  event.preventDefault();
+  const form = event.target;
+  const formData = new FormData(form);
+  try {
+    const response = await fetch('https://testserver-eight-olive.vercel.app/api/bdPost', {
+      method: 'POST',
+      body: formData
+    });
+    const result = await response.json();
+    if (response.ok && result.success) {
+      console.log("Форма успешно отправлена!", result);
+      handleUpdate();
+      form.reset();
+    } else {
+      console.error("Ошибка при отправке формы:", result);
+    }
+  } catch (error) {
+    console.error("Ошибка при запросе:", error);
+  }
+});
+</script>
+
+</body>
+</html>
