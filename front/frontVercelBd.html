@@ -110,7 +110,8 @@ const handleUpdate = async () => {
       button.className = 'button';
       button.innerHTML = 'Подробнее';
       button.addEventListener('click', () => {
-        const url = new URL('master.html', window.location.origin);
+        // const url = new URL('master.html', window.location.origin);
+        const url = new URL('/front/master.html', window.location.origin);
         url.searchParams.set('name', encodeURIComponent(person.Name));
         url.searchParams.set('profession_id', person.profession_title);
         url.searchParams.set('portfolio', person.portfolio);
