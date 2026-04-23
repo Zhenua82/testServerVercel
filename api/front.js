@@ -38,9 +38,9 @@ const allowedOrigins = [
 ];
 
 export default function handler(req, res) {
-  // const origin = req.headers.origin;
+  // Проверяем, соответствует ли Origin разрешенным
 
-  // // Проверяем, соответствует ли Origin разрешенным
+  // const origin = req.headers.origin; 
   // if (allowedOrigins.includes(origin)) {
   //   res.setHeader('Access-Control-Allow-Origin', origin);
   //   res.setHeader('Content-Type', 'text/html');
@@ -63,7 +63,6 @@ export default function handler(req, res) {
     res.end('<h1>403 Forbidden: Access is denied</h1>');
     return;
   }
-
   console.log('+++OK');
   res.status(200).end('<h1>Answer from Vercel Serverless Function</h1> <a href="#">Link</a>');
 }
