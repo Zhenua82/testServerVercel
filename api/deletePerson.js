@@ -175,6 +175,22 @@
 import pkg from 'pg';
 import cloudinary from '../lib/cloudinary.js';
 
+import jwt from 'jsonwebtoken';
+
+function checkAuth(req) {
+  const cookie = req.headers.cookie || '';
+  const token = cookie.split('auth=')[1]?.split(';')[0];
+
+  if (!token) return false;
+
+  try {
+    jwt.verify(token, process.env.JWT_SECRET);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const { Pool } = pkg;
 
 export const config = {
@@ -219,6 +235,10 @@ function getPublicIdFromUrl(url) {
 }
 
 export default async function handler(req, res) {
+// Проверка авторизации (можно удалить, если не нужна):
+  if (!checkAuth(req)) {
+    return res.status(401).json({ error: 'Не авторизован' });
+  }
 
   // 🔻 CORS (исправленный и стабильный)
   const origin = req.headers.origin;

@@ -56,38 +56,38 @@
         window.location.href = url.toString();
       });
 
-      // const deleteBtn = document.createElement('button');
-      // deleteBtn.className = 'delete-btn';
-      // deleteBtn.innerHTML = '🗑';
-      // deleteBtn.title = 'Удалить';
-      // deleteBtn.onclick = async () => {
-      //   if (!confirm(`Удалить ${person.Name}?`)) return;
-      //   try {
-      //     const delRes = await fetch('https://testserverrender.onrender.com/deletePerson', {
-      //       method: 'POST',
-      //       headers: { 'Content-Type': 'application/json' },
-      //       body: JSON.stringify({
-      //         photo: person.photo,
-      //         portfolio: person.portfolio
-      //       })
-      //     });
-      //     const result = await delRes.json();
-      //     if (result.success) {
-      //       container.remove();
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.innerHTML = '🗑';
+      deleteBtn.title = 'Удалить';
+      deleteBtn.onclick = async () => {
+        if (!confirm(`Удалить ${person.Name}?`)) return;
+        try {
+          const delRes = await fetch('https://testserverrender.onrender.com/deletePerson', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              photo: person.photo,
+              portfolio: person.portfolio
+            })
+          });
+          const result = await delRes.json();
+          if (result.success) {
+            container.remove();
 
-      //       // Удаляем из localStorage текущего пользователя
-      //       const updatedData = data.filter(p => p.photo !== person.photo);
-      //       localStorage.setItem('personData', JSON.stringify(updatedData));
-      //     } else {
-      //       alert('Ошибка при удалении');
-      //     }
-      //   } catch (err) {
-      //     console.error(err);
-      //     alert('Ошибка при удалении');
-      //   }
-      // };
+            // Удаляем из localStorage текущего пользователя
+            const updatedData = data.filter(p => p.photo !== person.photo);
+            localStorage.setItem('personData', JSON.stringify(updatedData));
+          } else {
+            alert('Ошибка при удалении');
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Ошибка при удалении');
+        }
+      };
 
-      // container.appendChild(deleteBtn);
+      container.appendChild(deleteBtn);
       container.appendChild(headerDiv);
       container.appendChild(img);
       container.appendChild(button);
