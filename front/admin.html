@@ -111,7 +111,8 @@ document.getElementById('myForm').addEventListener('submit', async function (eve
   try {
     const response = await fetch('https://testserver-eight-olive.vercel.app/api/bdPost', {
       method: 'POST',
-      body: formData
+      body: formData,
+      credentials: 'include'
     });
     const result = await response.json();
     if (response.ok && result.success) {

@@ -42,28 +42,39 @@ const pool = new Pool({
 console.log('Cloudinary config check:', process.env.CLOUDINARY_CLOUD_NAME);
 
 export default async function handler(req, res) {
-  // Проверка авторизации (можно удалить, если не нужна):
-  if (!checkAuth(req)) {
-    return res.status(401).json({ error: 'Не авторизован' });
-  }
+  // const origin = req.headers.origin;
+  // res.setHeader(
+  //   'Access-Control-Allow-Origin',
+  //   allowedOrigins.includes(origin) ? origin : '*'
+  // );
+  // res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  // res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // if (req.method === 'OPTIONS') {
+  //   return res.status(200).end();
+  // }
+  // if (req.method === 'OPTIONS') {
+  //   return res.status(200).end();
+  // }
 
   const origin = req.headers.origin;
-  res.setHeader(
-    'Access-Control-Allow-Origin',
-    allowedOrigins.includes(origin) ? origin : '*'
-  );
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
+    }
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Метод не поддерживается' });
+  }
+
+  // Проверка авторизации (можно удалить, если не нужна):
+  if (!checkAuth(req)) {
+    return res.status(401).json({ error: 'Не авторизован' });
   }
 
   const form = formidable({ multiples: true });
