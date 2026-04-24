@@ -15,6 +15,7 @@ export default async function handler(req, res) {
         }
         res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
 
         if (req.method === 'OPTIONS') {
             return res.status(200).end();
@@ -40,7 +41,11 @@ export default async function handler(req, res) {
   );
 
   // HttpOnly cookie (нельзя украсть через JS)
-  res.setHeader('Set-Cookie', `auth=${token}; HttpOnly; Path=/; Max-Age=3600; SameSite=Strict; Secure`);
+//   res.setHeader('Set-Cookie', `auth=${token}; HttpOnly; Path=/; Max-Age=3600; SameSite=Strict; Secure`);
+  res.setHeader(
+  'Set-Cookie',
+  `auth=${token}; HttpOnly; Path=/; Max-Age=3600; SameSite=None; Secure`
+);
 
   res.status(200).json({ success: true });
 }

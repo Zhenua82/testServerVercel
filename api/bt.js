@@ -31,6 +31,7 @@ export default async function handler(req, res) {
   // ВАЖНО: теперь GET вместо POST
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   // preflight
   if (req.method === 'OPTIONS') {

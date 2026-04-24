@@ -45,7 +45,10 @@
 
   <script>
     (async () => {
-      const res = await fetch('https://testserver-eight-olive.vercel.app/api/bt');
+      const res = await fetch('https://testserver-eight-olive.vercel.app/api/bt', {
+        method: 'GET',
+        credentials: 'include'
+      });
 
       if (res.status === 401) {
         // window.location.href = '/front/login.html';
