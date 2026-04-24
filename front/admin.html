@@ -47,7 +47,7 @@
     (async () => {
       const res = await fetch('https://testserver-eight-olive.vercel.app/api/bt');
 
-      if (res.status === 404) {
+      if (res.status === 401) {
         // window.location.href = '/front/login.html';
         window.location.href = '/testServerVercel/front/login.html';
       }
