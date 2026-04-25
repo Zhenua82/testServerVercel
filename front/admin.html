@@ -120,7 +120,7 @@ document.getElementById('myForm').addEventListener('submit', async function (eve
     const result = await response.json();
     if (response.ok && result.success) {
       console.log("Форма успешно отправлена!", result);
-      handleUpdate();
+      handleUpdateVercel();
       form.reset();
     } else {
       console.error("Ошибка при отправке формы:", result);
