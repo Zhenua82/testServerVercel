@@ -51,8 +51,8 @@
       });
 
       if (res.status === 401) {
-        // window.location.href = '/front/login.html';
-        window.location.href = '/testServerVercel/front/login.html';
+        window.location.href = '/front/login.html';
+        // window.location.href = '/testServerVercel/front/login.html';
       }
     })();
   </script>
@@ -99,8 +99,8 @@
         const data = await response.json();
         localStorage.setItem('personData', JSON.stringify(data.result));
         // window.location.href = 'https://testserver-eight-olive.vercel.app/front/viewDataAdmin.html';
-        // window.location.href = '/front/viewDataAdmin.html';
-        window.location.href = '/testServerVercel/front/viewDataAdmin.html';
+        window.location.href = '/front/viewDataAdmin.html';
+        // window.location.href = '/testServerVercel/front/viewDataAdmin.html';
       } catch (error) {
         console.error('Ошибка:', error);
         alert('Произошла ошибка при выполнении запроса: ' + error.message);

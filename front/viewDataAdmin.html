@@ -47,8 +47,8 @@
       button.className = 'button';
       button.innerHTML = 'Подробнее';
       button.addEventListener('click', () => {
-        // const url = new URL('/front/master.html', window.location.origin);
-        const url = new URL('/testServerVercel/front/master.html', window.location.origin);
+        const url = new URL('/front/master.html', window.location.origin);
+        // const url = new URL('/testServerVercel/front/master.html', window.location.origin);
         // const url = new URL('https://testserver-eight-olive.vercel.app/front/master.html', window.location.origin);
         url.searchParams.set('name', encodeURIComponent(person.Name));
         url.searchParams.set('profession_id', person.profession_title);
