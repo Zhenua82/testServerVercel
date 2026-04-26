@@ -97,6 +97,7 @@ export default async function handler(req, res) {
         hh.photo, 
         hh.telephone, 
         hp.title AS profession_title,
+        hp.price AS profession_price,
         hh.portfolio
       FROM homework_human AS hh
       JOIN homework_profession AS hp ON hh.profession_id = hp.id

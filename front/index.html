@@ -137,10 +137,14 @@ Node.js скрипт выполняется один раз (как обычна
       <a href="#" onclick="handleUpdateRender(); return false;" style="color: blue; font-size: 1.1em; font-weight: bold;">
         ▶ Работа с сервером render.com (c использованием express) и бд Neon
       </a><br>
-      <a href="viewData.html" target="_blank"
+      <a href="#" onclick="handleUpdateVercel(); return false;"
         style="color: blue; font-size: 1.1em; font-weight: bold;">
         ▶ Работа с сервером vercel.com (в среде Vercel Serverless Functions без использования express) и бд Neon
       </a><br>
+      <!-- <a href="viewData.html" target="_blank"
+        style="color: blue; font-size: 1.1em; font-weight: bold;">
+        ▶ Работа с сервером vercel.com (в среде Vercel Serverless Functions без использования express) и бд Neon
+      </a><br> -->
       <!-- <div onclick="handleUpdate()"
         style="color: blue; font-size: 1.1em; font-weight: bold; cursor: pointer;">
         ▶ Работа с сервером vercel.com (в среде Vercel Serverless Functions без использования express) и бд Neon
@@ -195,8 +199,10 @@ Node.js скрипт выполняется один раз (как обычна
           return;
         }
         const data = await response.json();
+        console.log(JSON.stringify(data.result))
         localStorage.setItem('personData', JSON.stringify(data.result));
-        window.location.href = 'https://testserver-eight-olive.vercel.app/front/viewData.html';
+        // window.location.href = 'https://testserver-eight-olive.vercel.app/front/viewData.html';
+        window.location.href = 'viewData.html';
       } catch (error) {
         console.error('Ошибка:', error);
         alert('Произошла ошибка при выполнении запроса: ' + error.message);

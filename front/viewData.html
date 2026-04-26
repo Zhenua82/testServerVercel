@@ -9,12 +9,15 @@
   <header>
     <a href="admin.html" target="_blank">admin </a>
   </header>
-  <h1>Список мастеров:</h1>
+  <h1>Ответ сервера:</h1>
+  <h2>Список мастеров:</h2>
   <div id="result"></div>
 
   <script>
   const rawData = localStorage.getItem('personData');
   const resultDiv = document.getElementById('result');
+  let a = 0;
+  console.log(JSON.parse(rawData))
 
   if (!rawData || rawData === '[]') {
     resultDiv.textContent = 'Нет данных';
@@ -47,7 +50,8 @@
       button.className = 'button';
       button.innerHTML = 'Подробнее';
       button.addEventListener('click', () => {
-        const url = new URL('/front/master.html', window.location.origin);
+        const url = new URL('master.html', window.location.href);
+        // const url = new URL('/front/master.html', window.location.origin);
         // const url = new URL('/testServerVercel/front/master.html', window.location.origin);
         // const url = new URL('https://testserver-eight-olive.vercel.app/front/master.html', window.location.origin);
         url.searchParams.set('name', encodeURIComponent(person.Name));
@@ -55,37 +59,7 @@
         url.searchParams.set('portfolio', person.portfolio);
         window.location.href = url.toString();
       });
-
-      // const deleteBtn = document.createElement('button');
-      // deleteBtn.className = 'delete-btn';
-      // deleteBtn.innerHTML = '🗑';
-      // deleteBtn.title = 'Удалить';
-      // deleteBtn.onclick = async () => {
-      //   if (!confirm(`Удалить ${person.Name}?`)) return;
-      //   try {
-      //     const delRes = await fetch('https://testserverrender.onrender.com/deletePerson', {
-      //       method: 'POST',
-      //       headers: { 'Content-Type': 'application/json' },
-      //       body: JSON.stringify({
-      //         photo: person.photo,
-      //         portfolio: person.portfolio
-      //       })
-      //     });
-      //     const result = await delRes.json();
-      //     if (result.success) {
-      //       container.remove();
-
-      //       // Удаляем из localStorage текущего пользователя
-      //       const updatedData = data.filter(p => p.photo !== person.photo);
-      //       localStorage.setItem('personData', JSON.stringify(updatedData));
-      //     } else {
-      //       alert('Ошибка при удалении');
-      //     }
-      //   } catch (err) {
-      //     console.error(err);
-      //     alert('Ошибка при удалении');
-      //   }
-      // };
+      a = a+1
 
       // container.appendChild(deleteBtn);
       container.appendChild(headerDiv);
@@ -94,6 +68,9 @@
       resultDiv.appendChild(container);
     });
   }
+  const itog = document.createElement('div');
+      itog.innerHTML = `Всего записей в базе данных: ${a}`;
+  resultDiv.appendChild(itog);
 </script>
 
 </body>
