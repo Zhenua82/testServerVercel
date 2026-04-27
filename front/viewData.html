@@ -6,19 +6,21 @@
   <link rel="stylesheet" href="css/personList.css" />
 </head>
 <body>
-  <header>
-    <a href="admin.html" target="_blank">admin </a>
+  <header style="color: blue; font-size: 1.1em; font-weight: bold; display: flex; justify-content: space-between; width: 100%;">
+    <a href="index.html" target="_blank">Главная </a>
+    <a href="admin.html" target="_blank">Admin </a>
   </header>
   <h1>Ответ сервера:</h1>
-  <h2>Список мастеров:</h2>
+  <div id="stats"></div>
+  <h2>Список рабочих:</h2>
   <div id="result"></div>
 
   <script>
   const rawData = localStorage.getItem('personData');
   const resultDiv = document.getElementById('result');
-  let a = 0;
-  console.log(JSON.parse(rawData))
-
+  let itogo = 0;
+  let summaPrice = 0;
+  
   if (!rawData || rawData === '[]') {
     resultDiv.textContent = 'Нет данных';
   } else {
@@ -57,10 +59,12 @@
         url.searchParams.set('name', encodeURIComponent(person.Name));
         url.searchParams.set('profession_id', person.profession_title);
         url.searchParams.set('portfolio', person.portfolio);
+        url.searchParams.set('profession_price', person.profession_price);
         window.location.href = url.toString();
       });
-      a = a+1
-
+      itogo += 1;
+      summaPrice += Number(person.profession_price)
+      
       // container.appendChild(deleteBtn);
       container.appendChild(headerDiv);
       container.appendChild(img);
@@ -69,8 +73,13 @@
     });
   }
   const itog = document.createElement('div');
-      itog.innerHTML = `Всего записей в базе данных: ${a}`;
-  resultDiv.appendChild(itog);
+      itog.innerHTML = `Всего рабочих в базе данных: ${itogo}`;
+      
+  const avg = itogo ? Math.round(summaPrice / itogo) : 0;
+  const mediana = document.createElement('div');
+      mediana.innerHTML = `Средняя зарплата всех рабочих имеющихся в базе: ${avg} $`;
+  stats.appendChild(itog);
+  stats.appendChild(mediana);
 </script>
 
 </body>
