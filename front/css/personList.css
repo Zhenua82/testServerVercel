@@ -1,4 +1,4 @@
-#result {
+/* #result {
   max-height: 94%;
 }
 h1{
@@ -14,9 +14,6 @@ h1{
   flex-direction: column;
   width: 600px;
   position: relative;
-  /* justify-content: center;
-  align-items: center; */
-  /* align-content: center; */
 }
 
 .name {
@@ -33,7 +30,6 @@ h1{
 }
 
 .delete-btn {
-  /* position: absolute; */
   top: 5px;
   right: 5px;
   background: transparent;
@@ -55,4 +51,199 @@ h1{
 
 .button:hover {
   background-color: #0056b3;
+} */
+ 
+/* ===== БАЗА ===== */
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #e8f5e9, #e3f2fd);
+  color: #333;
+}
+
+/* ===== HEADER ===== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 20px;
+  background: linear-gradient(90deg, #1b5e20, #00acc1);
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.nav-link:hover {
+  color: #ff5252;
+}
+
+/* ===== КОНТЕЙНЕР ===== */
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* ===== ЗАГОЛОВКИ ===== */
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+h2 {
+  margin-top: 30px;
+  text-align: center;
+}
+
+/* ===== СТАТИСТИКА ===== */
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  background: white;
+  padding: 10px 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  font-size: 15px;
+}
+
+/* ===== СЕТКА ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* ===== КАРТОЧКА ===== */
+.person {
+  background: white;
+  border-radius: 14px;
+  padding: 12px;
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: 360px; /* фиксируем минимальную высоту */
+
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== HOVER ЭФФЕКТ ===== */
+.person:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* подсветка градиентом */
+.person::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(0, 172, 193, 0.15), transparent);
+  opacity: 0;
+  transition: 0.4s;
+}
+
+.person:hover::before {
+  opacity: 1;
+}
+
+/* ===== HEADER В КАРТОЧКЕ ===== */
+.name {
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+/* ===== ФОТО ===== */
+.photo {
+  width: 100%;
+  height: 220px;       /* фикс высоты */
+  object-fit: cover;   /* обрезка */
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+.person:hover .photo {
+  transform: scale(1.05);
+}
+
+/* ===== КНОПКА ===== */
+.button {
+  margin-top: auto; /* прижимает кнопку вниз */
+
+  background: linear-gradient(45deg, #00acc1, #2e7d32);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 8px;
+
+  font-weight: bold;
+  letter-spacing: 0.3px;
+
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.button:hover {
+  background: linear-gradient(45deg, #00838f, #1b5e20);
+  transform: scale(1.05);
+}
+
+/* ===== АНИМАЦИЯ ПОЯВЛЕНИЯ ===== */
+.person {
+  animation: fadeInUp 0.4s ease forwards;
+  position: relative;
+  z-index: 1;
+}
+
+.person::before {
+  pointer-events: none;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== МОБИЛКА ===== */
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .stats {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .photo {
+    height: 180px;
+  }
+
+  .person {
+    min-height: 320px;
+  }
 }

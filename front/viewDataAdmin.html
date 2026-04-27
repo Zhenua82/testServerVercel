@@ -42,10 +42,18 @@
       headerDiv.appendChild(nameSpan);
       headerDiv.appendChild(telDiv);
 
+      // const img = document.createElement('img');
+      // // img.src = 'https://ce03510-wordpress-og5g7.tw1.ru/api/media/' + person.photo;
+      // img.src = 'https://res.cloudinary.com/dbynsbahm/image/upload/v1776595857/' + person.photo;
+      // img.className = 'photo';
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'photo-wrapper';
       const img = document.createElement('img');
-      // img.src = 'https://ce03510-wordpress-og5g7.tw1.ru/api/media/' + person.photo;
       img.src = 'https://res.cloudinary.com/dbynsbahm/image/upload/v1776595857/' + person.photo;
       img.className = 'photo';
+      wrapper.appendChild(img);
+      container.appendChild(wrapper);
 
       const button = document.createElement('button');
       button.className = 'button';

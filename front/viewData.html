@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
@@ -80,6 +80,131 @@
       mediana.innerHTML = `Средняя зарплата всех рабочих имеющихся в базе: ${avg} $`;
   stats.appendChild(itog);
   stats.appendChild(mediana);
+</script>
+
+</body>
+</html> -->
+
+
+<!DOCTYPE html> 
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Данные из базы</title>
+
+  <link rel="stylesheet" href="css/personList.css" />
+</head>
+
+<body>
+
+<header class="header">
+  <a href="index.html" class="nav-link">🏠 Главная</a>
+  <a href="admin.html" class="nav-link">⚙️ Admin</a>
+</header>
+
+<main class="container">
+  <h1>Данные из базы данных</h1>
+
+  <div id="stats" class="stats"></div>
+
+  <h2>Список специалистов</h2>
+  <div id="result" class="grid"></div>
+</main>
+
+<script>
+const rawData = localStorage.getItem('personData');
+const resultDiv = document.getElementById('result');
+const stats = document.getElementById('stats');
+
+let itogo = 0;
+let summaPrice = 0;
+
+if (!rawData || rawData === '[]') {
+  resultDiv.textContent = 'Нет данных';
+} else {
+  const data = JSON.parse(rawData);
+  resultDiv.innerHTML = '';
+
+  data.forEach(person => {
+    const container = document.createElement('div');
+    container.className = 'person';
+
+    const headerDiv = document.createElement('div');
+    headerDiv.className = 'name';
+
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = person.Name;
+
+    const telDiv = document.createElement('div');
+    telDiv.innerHTML = person.telephone;
+
+    headerDiv.appendChild(nameSpan);
+    headerDiv.appendChild(telDiv);
+
+    // const img = document.createElement('img');
+    // img.src = 'https://res.cloudinary.com/dbynsbahm/image/upload/v1776595857/' + person.photo;
+    // img.className = 'photo';
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'photo-wrapper';
+
+    const img = document.createElement('img');
+    img.src = 'https://res.cloudinary.com/dbynsbahm/image/upload/v1776595857/' + person.photo;
+    img.className = 'photo';
+
+    wrapper.appendChild(img);
+    container.appendChild(wrapper);
+
+    const button = document.createElement('button');
+    button.className = 'button';
+    button.innerHTML = 'Подробнее';
+
+    button.addEventListener('click', () => {
+      const url = new URL('master.html', window.location.href);
+
+      url.searchParams.set('name', encodeURIComponent(person.Name));
+      url.searchParams.set('profession_id', person.profession_title);
+      url.searchParams.set('portfolio', person.portfolio);
+      url.searchParams.set('profession_price', person.profession_price);
+
+      window.location.href = url.toString();
+    });
+
+    itogo += 1;
+    summaPrice += Number(person.profession_price);
+
+    container.appendChild(headerDiv);
+    container.appendChild(img);
+    container.appendChild(button);
+
+    resultDiv.appendChild(container);
+  });
+}
+
+// const wrapper = document.createElement('div');
+// wrapper.className = 'photo-wrapper';
+
+// const img = document.createElement('img');
+// img.src = 'https://res.cloudinary.com/dbynsbahm/image/upload/v1776595857/' + person.photo;
+// img.className = 'photo';
+
+// wrapper.appendChild(img);
+// container.appendChild(wrapper);
+
+// статистика
+const total = document.createElement('div');
+total.className = 'stat-item';
+total.innerHTML = `👥 Всего специалистов: <b>${itogo}</b>`;
+
+const avg = itogo ? Math.round(summaPrice / itogo) : 0;
+
+const average = document.createElement('div');
+average.className = 'stat-item';
+average.innerHTML = `💰 Средняя зарплата: <b>${avg} $</b>`;
+
+stats.appendChild(total);
+stats.appendChild(average);
 </script>
 
 </body>
