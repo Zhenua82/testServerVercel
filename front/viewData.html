@@ -136,8 +136,10 @@ if (!rawData || rawData === '[]') {
     const nameSpan = document.createElement('span');
     nameSpan.textContent = person.Name;
 
+    // const telDiv = document.createElement('div');
     const telDiv = document.createElement('div');
-    telDiv.innerHTML = person.telephone;
+    telDiv.className = 'telDiv';
+    telDiv.innerHTML = `Телефон: ${person.telephone}`;
 
     headerDiv.appendChild(nameSpan);
     headerDiv.appendChild(telDiv);

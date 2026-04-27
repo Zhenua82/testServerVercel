@@ -215,6 +215,10 @@ h2 {
   pointer-events: none;
 }
 
+.telDiv {
+  margin-bottom: 10px;
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
