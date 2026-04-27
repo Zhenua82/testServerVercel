@@ -1,9 +1,11 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Node.js Server Demo</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" href="favicon.svg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -94,6 +96,157 @@
       } catch (error) {
         console.error(error);
         alert('Ошибка: ' + error.message);
+      }
+    };
+  </script>
+</body>
+</html> -->
+
+<!DOCTYPE html> 
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Node.js Server Demo</title>
+  <!-- Фавиконка: -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="spinner"></div>
+    <div>Загрузка...</div>
+  </div>
+
+  <header>
+    <h1>Работа с серверами на Node.js</h1>
+  </header>
+
+  <main>
+    <section class="description">
+      <p>
+        В этом проекте представлены различные варианты реализации backend-части:
+        нативный Node.js, Express и Serverless-функции на Vercel.
+      </p>
+      <p>
+        Используется PostgreSQL (Neon) и Cloudinary для хранения изображений.
+      </p>
+    </section>
+
+    <h2>Демонстрация:</h2>
+
+    <div class="card">
+      <a href="#" onclick="handleUpdateRender(); return false;" class="link blue">
+        ▶ Сервер на Render (Express + PostgreSQL)
+      </a>
+
+      <a href="#" onclick="handleUpdateVercel(); return false;" class="link green">
+        ▶ Сервер на Vercel (Serverless + PostgreSQL)
+      </a>
+
+      <a href="/front/front.html" target="_blank" class="link cyan">
+        ▶ Простой API-запрос (Vercel)
+      </a>
+
+      <a href="https://test-server-vercel2.vercel.app/" target="_blank" class="link red">
+        ▶ Сложные API-запросы (Node.js)
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    <img src="https://cdn-icons-png.flaticon.com/512/919/919825.png" alt="Node.js" width="40">
+    <p>© 2026 Node.js Demo</p>
+  </footer>
+
+  <script>
+    //Прогрев сервера render.com и бд Neon (чтобы не было долгого первого ответа при открытии страницы и при первом запросе к серверу)
+    fetch('https://testserverrender.onrender.com/');
+    fetch('https://testserver-eight-olive.vercel.app/api/ping').catch(() => {});
+
+    const loader = document.getElementById('loader');
+
+    // ===== UTILS =====
+
+    const fetchWithTimeout = (url, options, timeout = 10000) => {
+      return Promise.race([
+        fetch(url, options),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout')), timeout)
+        )
+      ]);
+    };
+
+    const fetchWithRetry = async (url, options, retries = 2) => {
+      try {
+        return await fetchWithTimeout(url, options);
+      } catch (err) {
+        if (retries <= 0) throw err;
+        return fetchWithRetry(url, options, retries - 1);
+      }
+    };
+
+    // ===== RENDER =====
+
+    const handleUpdateRender = async () => {
+      try {
+        const response = await fetch('https://testserverrender.onrender.com/bd', { method: 'POST' });
+
+        if (!response.ok) {
+          const errText = await response.text();
+          alert('Ошибка при запросе к серверу: ' + errText);
+          return;
+        }
+
+        const data = await response.json();
+        localStorage.setItem('personData', JSON.stringify(data.result));
+        window.location.href = 'https://testserverrender.onrender.com/front/viewData.html';
+
+      } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Ошибка: ' + error.message);
+      }
+    };
+
+    // ===== VERCEL =====
+
+    const handleUpdateVercel = async () => {
+      loader.style.display = 'flex';
+
+      try {
+        const response = await fetchWithRetry(
+          'https://testserver-eight-olive.vercel.app/api/bd',
+          { method: 'POST' },
+          2
+        );
+
+        if (!response.ok) {
+          const errText = await response.text();
+          alert('Ошибка при запросе к серверу: ' + errText);
+          loader.style.display = 'none';
+          return;
+        }
+
+        const data = await response.json();
+        localStorage.setItem('personData', JSON.stringify(data.result));
+
+        window.location.href = 'viewData.html';
+
+      } catch (error) {
+        console.error('Ошибка:', error);
+
+        loader.style.display = 'none';
+
+        alert('Сервер временно недоступен. Попробуйте ещё раз.');
       }
     };
   </script>
