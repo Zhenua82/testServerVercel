@@ -6,15 +6,12 @@
   <link rel="stylesheet" href="css/personList.css" />
 </head>
 <body>
-  <header>
-    <a href="admin.html" target="_blank" style="margin-left: 80%;">admin </a>
-    <!-- <a href="viewData.html" target="_blank"
-    style="color: blue; font-size: 1.1em; font-weight: bold; align-self: end;">
-    Назад к мастерам
-  </a><br> -->
+  <header class="header">
+    <a href="index.html" class="nav-link">🏠 Главная</a>
+    <a href="admin.html" class="nav-link">⚙️ Admin</a>
   </header>
   <h1>Список мастеров:</h1>
-  <div id="result"></div>
+  <div id="result" class="grid"></div>
 
   <script>
   const rawData = localStorage.getItem('personData');
@@ -53,7 +50,7 @@
       img.src = 'https://res.cloudinary.com/dbynsbahm/image/upload/v1776595857/' + person.photo;
       img.className = 'photo';
       wrapper.appendChild(img);
-      container.appendChild(wrapper);
+      // container.appendChild(wrapper);
 
       const button = document.createElement('button');
       button.className = 'button';
@@ -102,7 +99,8 @@
 
       container.appendChild(deleteBtn);
       container.appendChild(headerDiv);
-      container.appendChild(img);
+      // container.appendChild(img);
+      container.appendChild(wrapper);
       container.appendChild(button);
       resultDiv.appendChild(container);
     });

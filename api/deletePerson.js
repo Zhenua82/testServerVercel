@@ -235,27 +235,42 @@ function getPublicIdFromUrl(url) {
 }
 
 export default async function handler(req, res) {
+
+  const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
+    }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Метод не поддерживается' });
+  }
 // Проверка авторизации (можно удалить, если не нужна):
   if (!checkAuth(req)) {
     return res.status(401).json({ error: 'Не авторизован' });
   }
 
   // 🔻 CORS (исправленный и стабильный)
-  const origin = req.headers.origin;
-  res.setHeader(
-    'Access-Control-Allow-Origin',
-    allowedOrigins.includes(origin) ? origin : '*'
-  );
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // const origin = req.headers.origin;
+  // res.setHeader(
+  //   'Access-Control-Allow-Origin',
+  //   allowedOrigins.includes(origin) ? origin : '*'
+  // );
+  // res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  // res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  // if (req.method === 'OPTIONS') {
+  //   return res.status(200).end();
+  // }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Метод не поддерживается' });
-  }
+  // if (req.method !== 'POST') {
+  //   return res.status(405).json({ error: 'Метод не поддерживается' });
+  // }
 
   try {
     const { photo, portfolio } = req.body;

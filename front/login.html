@@ -1,4 +1,4 @@
-<form id="loginForm">
+<!-- <form id="loginForm">
   <input type="text" name="login" placeholder="Логин" required><br>
   <input type="password" name="password" placeholder="Пароль" required><br>
   <button type="submit">Войти</button>
@@ -27,4 +27,186 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     alert('Неверный логин или пароль');
   }
 });
+</script> -->
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Авторизация</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f2027, #2c5364);
+    color: #333;
+  }
+
+  .login-container {
+    background: #ffffff;
+    padding: 35px 30px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: fadeIn 0.6s ease;
+  }
+
+  h1 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.5em;
+    color: #2c3e50;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 1em;
+    transition: 0.2s;
+  }
+
+  input:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: 0.25s;
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  button:active {
+    transform: scale(0.98);
+  }
+
+  button.loading {
+    background: #95a5a6;
+    cursor: not-allowed;
+  }
+
+  .error {
+    color: #e74c3c;
+    font-size: 0.9em;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .loader {
+    display: none;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #555;
+  }
+
+  .loader.show {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 400px) {
+    .login-container {
+      padding: 25px 20px;
+    }
+  }
+</style>
+</head>
+
+<body>
+<div class="login-container">
+  <h1>Вход в панель администратора</h1>
+
+  <form id="loginForm">
+    <input type="text" name="login" placeholder="Логин" required />
+    <input type="password" name="password" placeholder="Пароль" required />
+    <button type="submit">Войти</button>
+  </form>
+
+  <div class="loader" id="loader">Проверка данных...</div>
+  <div class="error" id="error"></div>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const form = e.target;
+  const button = form.querySelector('button');
+  const loader = document.getElementById('loader');
+  const errorDiv = document.getElementById('error');
+
+  errorDiv.textContent = '';
+  button.classList.add('loading');
+  button.textContent = 'Вход...';
+  loader.classList.add('show');
+
+  const formData = new FormData(form);
+
+  try {
+    const res = await fetch('https://testserver-eight-olive.vercel.app/api/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        login: formData.get('login'),
+        password: formData.get('password')
+      }),
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include' // важно для cookie
+    });
+
+    if (res.ok) {
+      window.location.href = '/testServerVercel/front/admin.html';
+    } else {
+      errorDiv.textContent = 'Неверный логин или пароль';
+    }
+
+  } catch (error) {
+    console.error(error);
+    errorDiv.textContent = 'Ошибка соединения с сервером';
+  } finally {
+    button.classList.remove('loading');
+    button.textContent = 'Войти';
+    loader.classList.remove('show');
+  }
+});
 </script>
+
+</body>
+</html>

@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Данные из БД</title>
 <link rel="stylesheet" href="css/cssForm.css">
+<link rel="stylesheet" href="css/personList.css" />
 <style>
   #result {
     max-height: 94%;
@@ -57,6 +58,11 @@
       }
     })();
   </script>
+
+  <header class="header">
+    <a href="index.html" class="nav-link">🏠 Главная</a>
+    <a href="viewData.html" class="nav-link">⬅ К списку специалистов</a>
+  </header>
 
 
 <h1>Работа с сервером vercel.com</h1>
@@ -129,6 +135,147 @@ document.getElementById('myForm').addEventListener('submit', async function (eve
     }
   } catch (error) {
     console.error("Ошибка при запросе:", error);
+  }
+});
+</script>
+
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Администрирование</title>
+
+<link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+
+<script>
+(async () => {
+  const res = await fetch('https://testserver-eight-olive.vercel.app/api/bt', {
+    method: 'GET',
+    credentials: 'include'
+  });
+
+  if (res.status === 401) {
+    window.location.href = 'login.html';
+  }
+})();
+</script>
+
+<header class="header">
+  <a href="index.html" class="nav-link">🏠 Главная</a>
+  <a href="viewData.html" class="nav-link">⬅ К списку специалистов</a>
+</header>
+
+<main class="container">
+
+  <h1>Панель администратора</h1>
+
+  <section class="actions">
+    <button class="btn primary" onclick="handleUpdateVercel()">
+      🔄 Загрузить данные из БД
+    </button>
+  </section>
+
+  <section class="form-section">
+    <h2>Добавить нового специалиста</h2>
+
+    <form id="myForm" enctype="multipart/form-data" class="form">
+
+      <label>Имя (до 9 символов)</label>
+      <input type="text" name="Name" maxlength="9" required>
+
+      <label>Фото (визитка)</label>
+      <input type="file" name="photo" accept="image/*" required>
+
+      <label>Портфолио (несколько изображений)</label>
+      <input type="file" name="portfolio" accept="image/*" multiple>
+
+      <label>Специализация</label>
+      <input type="text" name="speciality" maxlength="27">
+
+      <label>Профессия</label>
+      <select name="profession_id" required>
+        <option value="">Выберите</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="9">9</option>
+      </select>
+
+      <label>Телефон</label>
+      <input type="text" name="telephone" maxlength="81">
+
+      <button type="submit" class="btn success">💾 Сохранить</button>
+
+    </form>
+  </section>
+
+  <section>
+    <div id="result" class="result"></div>
+  </section>
+
+</main>
+
+<script>
+const handleUpdateVercel = async () => {
+  try {
+    const response = await fetch('https://testserver-eight-olive.vercel.app/api/bd', { method: 'POST' });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      alert('Ошибка: ' + errText);
+      return;
+    }
+
+    const data = await response.json();
+    localStorage.setItem('personData', JSON.stringify(data.result));
+
+    window.location.href = 'viewDataAdmin.html';
+
+  } catch (error) {
+    console.error(error);
+    alert('Ошибка: ' + error.message);
+  }
+};
+
+document.getElementById('myForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const form = event.target;
+  const btn = form.querySelector('button');
+  const formData = new FormData(form);
+
+  btn.textContent = 'Сохранение...';
+  btn.disabled = true;
+
+  try {
+    const response = await fetch('https://testserver-eight-olive.vercel.app/api/bdPost', {
+      method: 'POST',
+      body: formData,
+      credentials: 'include'
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      handleUpdateVercel();
+      form.reset();
+    } else {
+      console.error(result);
+      alert('Ошибка при сохранении');
+    }
+
+  } catch (error) {
+    console.error(error);
+    alert('Ошибка сети');
+  } finally {
+    btn.textContent = '💾 Сохранить';
+    btn.disabled = false;
   }
 });
 </script>
