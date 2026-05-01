@@ -64,5 +64,5 @@ export default function handler(req, res) {
     return;
   }
   console.log('+++OK');
-  res.status(200).end('<h1>Answer from Vercel Serverless Function</h1> <a href="index">Ссылка на главную страницу</a>');
+  res.status(200).end('<h1>Answer from Vercel Serverless Function</h1> <a href="index.html">Ссылка на главную страницу</a>');
 }
