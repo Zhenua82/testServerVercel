@@ -73,7 +73,8 @@
       deleteBtn.onclick = async () => {
         if (!confirm(`Удалить ${person.Name}?`)) return;
         try {
-          const delRes = await fetch('https://testserverrender.onrender.com/deletePerson', {
+          // const delRes = await fetch('https://testserverrender.onrender.com/deletePerson', {
+          const delRes = await fetch('https://testserver-eight-olive.vercel.app/api/deletePerson', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
