@@ -232,11 +232,11 @@ h2 {
 
 /* ===== МОБИЛКА ===== */
 @media (max-width: 600px) {
-  .header {
+  /* .header {
     flex-direction: column;
     gap: 10px;
     align-items: center;
-  }
+  } */
 
   .stats {
     flex-direction: column;
