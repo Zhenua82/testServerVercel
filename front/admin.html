@@ -154,7 +154,7 @@ document.getElementById('myForm').addEventListener('submit', async function (eve
 
 <body>
 
-<script>
+<!-- <script>
 (async () => {
   const res = await fetch('https://testserver-eight-olive.vercel.app/api/bt', {
     method: 'GET',
@@ -165,6 +165,34 @@ document.getElementById('myForm').addEventListener('submit', async function (eve
     window.location.href = 'login.html';
   }
 })();
+</script> -->
+
+<script>
+  async function checkAdminAuth() {
+    try {
+      const res = await fetch('https://testserver-eight-olive.vercel.app/api/bt', {
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store'
+      });
+
+      if (res.status === 401) {
+        window.location.replace('login.html');
+      }
+
+    } catch (e) {
+      console.error(e);
+      window.location.replace('login.html');
+    }
+  }
+  // Проверка при обычной загрузке
+  checkAdminAuth();
+  // Проверка при возврате кнопкой "назад"
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+      checkAdminAuth();
+    }
+  });
 </script>
 
 <header class="header">

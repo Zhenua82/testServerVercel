@@ -230,6 +230,17 @@ h2 {
   }
 }
 
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 15px;
+  background: #f5f5f5;
+}
+
+footer img {
+  width: 40px;
+}
+
 /* ===== МОБИЛКА ===== */
 @media (max-width: 600px) {
   /* .header {
